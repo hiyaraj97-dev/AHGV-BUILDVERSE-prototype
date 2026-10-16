@@ -1,13 +1,18 @@
 {
-  "name": "temporal-rag-lms",
+  "name": "ahgv-buildverse-prototype",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API-First Temporal RAG LMS with Temporal Horizon Masking",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "temporal-rag",
+    "lms",
+    "ai-tutor",
+    "hackgyanverse"
+  ],
+  "author": "Hiya Chopra",
   "license": "ISC",
   "type": "commonjs"
 }
