@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Temporal RAG — LMS AI Assistant (No-Spoiler Guardrail)</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="theme-dark">
+  <!-- Top LMS Header Bar (Slide 2: Canvas / Blackboard LMS Integration) -->
+  <header class="lms-header">
+    <div class="header-left">
+      <div class="lms-logo-badge">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+        </svg>
+        <span class="logo-text">Canvas LMS <span class="badge-addon">Add-On</span></span>
+      </div>
+      <div class="course-meta">
+        <h1 id="course-title">CS229: Foundations of Deep Learning</h1>
+        <span class="module-title" id="course-module">Module 2: Perceptrons, Loss Surfaces & Backpropagation</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <!-- Guardrail Mode Switch (Slide 1 & 4) -->
+      <div class="guardrail-control">
+        <span class="control-label">RAG Algorithm:</span>
+        <div class="toggle-group" id="rag-mode-toggle">
+          <button class="toggle-btn active" id="btn-mode-temporal" data-mode="temporal" title="Temporal Horizon Masking: physically blocks chunks past current video pause time">
+            <span class="shield-icon">🛡️</span> Temporal RAG <span class="tag-safe">0% Leakage</span>
+          </button>
+          <button class="toggle-btn" id="btn-mode-naive" data-mode="naive" title="Standard RAG without time filters: leaks future lecture chunks">
+            <span class="warn-icon">⚠️</span> Naive RAG <span class="tag-leak">Spoils Future</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="system-status-chip" id="guardrail-status-pill">
+        <span class="pulse-dot"></span>
+        <span id="status-text">Horizon Masking: ACTIVE</span>
+      </div>
+
+      <button class="btn-icon" id="btn-open-architecture" title="View Technical Architecture & Data Flow">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Architecture</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Grid Layout -->
+  <main class="lms-container">
+    <!-- Left Column: Video Lecture + Temporal Horizon Bar + Synced Middleware -->
+    <section class="lecture-pane">
+      <!-- 1. Interactive Video Player (Slide 2 & 3) -->
+      <div class="video-card">
+        <div class="video-wrapper">
+          <canvas id="lecture-canvas" width="800" height="450"></canvas>
+          
+          <!-- Live Pause-to-Ask Overlay Prompt -->
+          <div class="pause-ask-overlay" id="pause-ask-prompt">
+            <div class="overlay-content">
+              <span class="pause-icon">⏸️</span>
+              <div class="overlay-text">
+                <strong>Paused at <span class="highlight-time" id="overlay-pause-time">02:30</span></strong>
+                <p>Have a doubt right here? Ask your AI Co-Pilot below without leaving the screen.</p>
+              </div>
+              <button class="btn-ask-doubt" id="btn-focus-doubt">Ask Question at <span id="btn-time-label">02:30</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Player Controls -->
+        <div class="player-controls">
+          <div class="controls-row-top">
+            <!-- Scrubber bar with chapter indicators -->
+            <div class="scrubber-container" id="scrubber-bar">
+              <div class="scrubber-bg"></div>
+              <div class="scrubber-buffered" id="scrubber-buffered"></div>
+              <div class="scrubber-progress" id="scrubber-progress"></div>
+              <div class="scrubber-handle" id="scrubber-handle"></div>
+              <div class="scrubber-cursor" id="scrubber-cursor"></div>
+              <div class="scrubber-tooltip" id="scrubber-tooltip">00:00</div>
+            </div>
+          </div>
+
+          <div class="controls-row-bottom">
+            <div class="ctrl-left">
+              <button class="btn-player" id="btn-play-pause" title="Play / Pause">
+                <svg id="icon-play" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <svg id="icon-pause" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16"></rect>
+                  <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+              </button>
+
+              <button class="btn-player" id="btn-rewind" title="Rewind 10s">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+                </svg>
+                <span class="tiny-label">-10s</span>
+              </button>
+
+              <button class="btn-player" id="btn-forward" title="Forward 10s">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                </svg>
+                <span class="tiny-label">+10s</span>
+              </button>
+
+              <div class="time-display">
+                <span id="current-time-display" class="current-time">02:30</span>
+                <span class="time-divider">/</span>
+                <span id="total-time-display" class="total-time">15:00</span>
+              </div>
+            </div>
+
+            <div class="ctrl-right">
+              <div class="speed-selector">
+                <button class="btn-speed active" data-speed="1">1x</button>
+                <button class="btn-speed" data-speed="1.25">1.25x</button>
+                <button class="btn-speed" data-speed="1.5">1.5x</button>
+              </div>
+
+              <!-- Chapter jump dropdown -->
+              <select id="chapter-select" class="chapter-dropdown" title="Jump to Lecture Chapter">
+                <!-- Dynamically populated -->
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Temporal Horizon Masking Visualizer (Slide 1 & 4: Core Innovation) -->
+      <div class="horizon-visualizer-card">
+        <div class="horizon-header">
+          <div class="horizon-title-box">
+            <span class="horizon-badge">CORE AI INNOVATION</span>
+            <h3>Temporal Horizon Masking Engine</h3>
+            <span class="horizon-subtext">The database physically filters future chunks before vector search</span>
+          </div>
+          <div class="horizon-metrics">
+            <span class="metric-item">
+              <span class="metric-val text-green" id="stat-accessible-count">5</span>
+              <span class="metric-label">Accessible Past Chunks</span>
+            </span>
+            <span class="metric-divider">|</span>
+            <span class="metric-item">
+              <span class="metric-val text-red" id="stat-blocked-count">9</span>
+              <span class="metric-label">Blocked Future Chunks</span>
+            </span>
+            <span class="metric-divider">|</span>
+            <span class="metric-item">
+              <span class="metric-val" id="stat-leakage-rate">0.0%</span>
+              <span class="metric-label">Future Leakage</span>
+            </span>
+          </div>
+        </div>
+
+        <!-- Interactive Horizon Timeline Bar -->
+        <div class="horizon-bar-wrapper">
+          <div class="horizon-bar" id="horizon-bar-chunks">
+            <!-- Dynamic 30s chunk segments injected here -->
+          </div>
+          <div class="horizon-marker" id="horizon-cursor-line" style="left: 16.6%;">
+            <div class="horizon-marker-tag">Pause Time <span id="horizon-marker-label">02:30</span></div>
+          </div>
+        </div>
+
+        <div class="horizon-legend">
+          <div class="legend-item"><span class="legend-swatch swatch-accessible"></span> Past Unlocked Zone (Indexed for RAG)</div>
+          <div class="legend-item"><span class="legend-swatch swatch-current"></span> Current Student Horizon</div>
+          <div class="legend-item"><span class="legend-swatch swatch-masked"></span> Masked Future Zone (Physical Guardrail 🔒)</div>
+        </div>
+      </div>
+
+      <!-- 3. Multi-Source Middleware Viewer (Slide 1 & 2: Transcripts, PDFs, PPT Slides) -->
+      <div class="middleware-card">
+        <div class="middleware-tabs">
+          <button class="tab-btn active" data-tab="tab-slide">
+            <span class="tab-icon">📊</span> Synced PPT Slide
+          </button>
+          <button class="tab-btn" data-tab="tab-pdf">
+            <span class="tab-icon">📄</span> Reading Notes (PDF)
+          </button>
+          <button class="tab-btn" data-tab="tab-transcript">
+            <span class="tab-icon">🎙️</span> Spoken Transcript (AWS Transcribe)
+          </button>
+          <button class="tab-btn" data-tab="tab-card">
+            <span class="tab-icon">⚡</span> 2-Minute Context Card
+          </button>
+        </div>
+
+        <div class="tab-content-area">
+          <!-- Tab 1: Synced PPT Slide -->
+          <div class="tab-pane active" id="tab-slide">
+            <div class="slide-viewer-box" id="slide-viewer">
+              <div class="slide-header">
+                <span class="slide-number-chip" id="slide-number-chip">Slide 2 / 6</span>
+                <h4 id="slide-title">Non-Linear Activation Functions</h4>
+                <span class="sync-tag">⚡ Synced with Video</span>
+              </div>
+              <div class="slide-body">
+                <ul class="slide-bullets" id="slide-bullets">
+                  <!-- Dynamic bullets -->
+                </ul>
+                <div class="slide-diagram-box">
+                  <div class="diagram-tag">SLIDE DIAGRAM</div>
+                  <div class="diagram-desc" id="slide-diagram-desc">Comparison curves: Sigmoid S-curve alongside piecewise linear ReLU ramp</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: Synced Reading Notes (PDF) -->
+          <div class="tab-pane" id="tab-pdf">
+            <div class="pdf-viewer-box">
+              <div class="pdf-header">
+                <span class="pdf-chapter-chip" id="pdf-chapter-chip">Chapter 2</span>
+                <h4 id="pdf-title">The Non-Linearity Requirement</h4>
+              </div>
+              <div class="pdf-body" id="pdf-body-text">
+                <!-- Dynamic text -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Spoken Transcript (30s Chunks) -->
+          <div class="tab-pane" id="tab-transcript">
+            <div class="transcript-scroll-list" id="transcript-list">
+              <!-- Dynamically populated chunks with click-to-seek -->
+            </div>
+          </div>
+
+          <!-- Tab 4: 2-Minute Context Card (Slide 4) -->
+          <div class="tab-pane" id="tab-card">
+            <div class="context-card-box" id="context-card-content">
+              <!-- Context card content -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: AI Live Side-Chat (Slide 2, 3, 4) -->
+    <aside class="chat-pane">
+      <div class="chat-card">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="tutor-info">
+            <div class="tutor-avatar">🤖</div>
+            <div class="tutor-meta">
+              <h3>AI Lecture Co-Pilot</h3>
+              <span class="tutor-model">Powered by AWS Bedrock Claude & Titan RAG</span>
+            </div>
+          </div>
+          <div class="chat-actions">
+            <button class="btn-clean-chat" id="btn-clear-chat" title="Clear Chat History">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Guardrail Alert Banner -->
+        <div class="guardrail-alert-banner" id="chat-guardrail-banner">
+          <div class="alert-icon">🛡️</div>
+          <div class="alert-text">
+            <strong>No-Spoiler Guardrail Active:</strong> The AI only knows concepts taught up to <span id="banner-pause-time">02:30</span>. Future topics will prompt helpful timestamp hints!
+          </div>
+        </div>
+
+        <!-- Quick Doubt Chips (One-Click Testing) -->
+        <div class="quick-prompts-bar">
+          <span class="quick-title">Quick Doubts:</span>
+          <div class="prompt-chips-list" id="prompt-chips">
+            <button class="prompt-chip" data-q="What did the professor just explain about activations?">
+              💡 Current Topic (02:30)
+            </button>
+            <button class="prompt-chip chip-spoiler" data-q="How does backpropagation work in deep networks?">
+              🔒 Future Test: Backpropagation
+            </button>
+            <button class="prompt-chip" data-q="Why can't a single perceptron solve the XOR problem?">
+              ⚡ Test XOR Limitation
+            </button>
+            <button class="prompt-chip" data-q="What is the learning rate alpha used for?">
+              🎯 Learning Rate Alpha
+            </button>
+          </div>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div class="chat-messages" id="chat-messages-container">
+          <!-- Welcome message -->
+          <div class="msg-row bot-row">
+            <div class="msg-bubble bot-bubble">
+              <div class="msg-header-tag">
+                <span class="bot-badge">AI TUTOR</span>
+                <span class="msg-time">Just now</span>
+              </div>
+              <div class="msg-text">
+                Hello! I am your <strong>Timestamp-Aware Lecture Co-Pilot</strong>.<br><br>
+                As you watch the lecture, pause anytime and ask a doubt. I physically mask all future minutes of the video so you receive grounded answers with <strong>0% future spoilers</strong> and clickable citations!
+              </div>
+              <div class="msg-citations">
+                <span class="citation-chip video-chip" onclick="seekToSeconds(105)">▶ Jump to [01:45] Slide 2</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fast Memory Cache & Latency Status Indicator (Slide 4) -->
+        <div class="cache-status-footer" id="cache-indicator">
+          <span class="cache-tag" id="cache-label">⚡ Sub-100ms Search Engine Ready</span>
+          <span class="cost-tag" id="cost-label">Cost: $0.00</span>
+        </div>
+
+        <!-- Chat Input Form (Slide 3: Ask Question API + Stream API) -->
+        <form class="chat-input-form" id="chat-form">
+          <div class="input-container">
+            <div class="timestamp-tag-bubble" id="input-timestamp-tag">
+              <span class="tag-pin">📍</span>
+              <span id="tag-time-label">02:30</span>
+            </div>
+            <input 
+              type="text" 
+              id="chat-query-input" 
+              placeholder="Ask a doubt about what was taught so far..." 
+              autocomplete="off"
+              required
+            />
+            <button type="submit" id="btn-send-doubt" class="btn-send" title="Send Question">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Technical Architecture & Innovation Modal (Slides 1-6) -->
+  <div class="modal-overlay hidden" id="arch-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2>Technical Architecture & Temporal RAG Innovation</h2>
+        <button class="btn-close-modal" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="arch-section">
+          <h3>1. The Fatal AI Gap & Innovation (Slide 1 & 4)</h3>
+          <p>
+            Standard AI chatbots in e-learning platforms search the entire course transcript indiscriminately. When a student pauses early in a lecture and asks a question, standard RAG retrieves future explanations, leaking future concepts, equations, and solutions.
+          </p>
+          <div class="math-card">
+            <strong>The Mathematical Masking Rule:</strong><br>
+            <code>Search Space = { Chunk_i | StartTime(Chunk_i) ≤ CurrentPauseTime }</code><br>
+            <code>Masked Space = { Chunk_j | StartTime(Chunk_j) > CurrentPauseTime } (Filtered BEFORE Vector Search)</code>
+          </div>
+        </div>
+
+        <div class="arch-section">
+          <h3>2. Multi-Resource Middleware (Slide 1 & 2)</h3>
+          <p>
+            Our middleware unifies three asynchronous learning assets into one synchronized knowledge layer:
+          </p>
+          <div class="pillars-grid">
+            <div class="pillar-card">
+              <span class="pillar-icon">🎙️</span>
+              <strong>AWS Transcribe</strong>
+              <span>30-second timestamped spoken transcripts</span>
+            </div>
+            <div class="pillar-card">
+              <span class="pillar-icon">📊</span>
+              <strong>Presentation Slides</strong>
+              <span>Structured bullet points & diagrams mapped to time intervals</span>
+            </div>
+            <div class="pillar-card">
+              <span class="pillar-icon">📄</span>
+              <strong>Course PDF Notes</strong>
+              <span>Textbook chapters aligned with lecture milestones</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="arch-section">
+          <h3>3. Helpful Future Hints ("The Teaser Guardrail")</h3>
+          <p>
+            If a student asks about a concept taught in a future lesson (e.g. <em>"How does backpropagation work?"</em> while paused at 02:30), the Future Horizon Scanner detects the concept in future chunks and prompts:
+          </p>
+          <blockquote class="quote-hint">
+            💡 "The teacher explains this completely at <strong>[12:30]</strong>! Keep watching to understand how today's foundation leads straight into it."
+          </blockquote>
+        </div>
+
+        <div class="arch-section">
+          <h3>4. Fast-Memory Caching (Slide 4)</h3>
+          <p>
+            Repeated student questions at identical lecture intervals are served directly from an in-memory LRU cache with <strong>0.1ms latency and $0.00 compute cost</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
