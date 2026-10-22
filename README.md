@@ -5,6 +5,15 @@ Based on the 6-slide presentation specifications, this prototype demonstrates a 
 
 ---
 
+## 🌐 Live Access & API Documentation Links
+
+- **Interactive API Documentation (Web Tester)**: [https://hiyaraj97-dev.github.io/AHGV-BUILDVERSE-prototype/api-docs.html](https://hiyaraj97-dev.github.io/AHGV-BUILDVERSE-prototype/api-docs.html)
+- **API Specification (Markdown)**: [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md)
+- **Live LMS Web Application**: [https://hiyaraj97-dev.github.io/AHGV-BUILDVERSE-prototype/](https://hiyaraj97-dev.github.io/AHGV-BUILDVERSE-prototype/)
+- **Local API Explorer**: `http://localhost:3000/api-docs.html` (or `http://localhost:3000/docs`)
+
+---
+
 ## 🎯 Architecture & PPT Slide Mapping
 
 | Slide | Concept / Feature | Prototype Implementation |

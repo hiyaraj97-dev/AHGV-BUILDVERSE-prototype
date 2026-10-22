@@ -222,6 +222,9 @@ const server = http.createServer((req, res) => {
 
   // --- STATIC FILE SERVING FOR LMS FRONTEND ---
   let reqPath = pathname === "/" ? "/index.html" : pathname;
+  if (reqPath === "/docs" || reqPath === "/api/docs") {
+    reqPath = "/api-docs.html";
+  }
   const filePath = path.join(PUBLIC_DIR, reqPath);
 
   // Security: prevent path traversal outside public dir
