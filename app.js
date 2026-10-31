@@ -1,6 +1,6 @@
 // app.js
-// Client Application for Temporal RAG LMS Prototype
-// Matches High-Fidelity Canvas SaaS Learning Companion Layout
+// Client Application for Lumivra & Temporal RAG LMS Prototype
+// Integrates the Lumivra Dashboard with the Canvas Temporal RAG Learning Companion
 
 const FALLBACK_COURSE_DATA = {
   id: "cs229-dl-01",
@@ -299,9 +299,20 @@ let playInterval = null;
 let currentRagMode = "temporal"; // "temporal" or "naive"
 let activeSlideIndex = 1; // 0-indexed (slide 2)
 
-// DOM Elements
+// Lumivra View Elements
+const lumivraDashboardView = document.getElementById("lumivra-dashboard-view");
+const prototypeWorkspaceView = document.getElementById("prototype-workspace-view");
+const cardFindCourses = document.getElementById("card-find-courses");
+const heroBtnStartLearning = document.getElementById("hero-btn-start-learning");
+const taskContinueModule2 = document.getElementById("task-continue-module2");
+const linkViewAllTasks = document.getElementById("link-view-all-tasks");
+const btnBackToDashboard = document.getElementById("btn-back-to-dashboard");
+const breadcrumbLumivraHome = document.getElementById("breadcrumb-lumivra-home");
+const navBrandHome = document.getElementById("nav-brand-home");
+
+// Prototype DOM Elements
 const canvas = document.getElementById("lecture-canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas ? canvas.getContext("2d") : null;
 const btnPlayPause = document.getElementById("btn-play-pause");
 const iconPlay = document.getElementById("icon-play");
 const iconPause = document.getElementById("icon-pause");
@@ -369,6 +380,47 @@ function formatTime(sec) {
   return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
 }
 
+// =========================================================
+// VIEW NAVIGATION CONTROLLERS (LUMIVRA <-> TEMPORAL RAG)
+// =========================================================
+
+function showPrototype(seekSeconds) {
+  if (lumivraDashboardView && prototypeWorkspaceView) {
+    lumivraDashboardView.classList.add("hidden");
+    prototypeWorkspaceView.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (typeof seekSeconds === "number") {
+      seekToSeconds(seekSeconds);
+    } else {
+      updateUIForTimestamp(currentSeconds);
+      drawLectureFrame();
+    }
+    window.location.hash = "course-cs229";
+  }
+}
+
+function showLumivraDashboard() {
+  if (isPlaying) {
+    pausePlayback();
+  }
+  if (lumivraDashboardView && prototypeWorkspaceView) {
+    prototypeWorkspaceView.classList.add("hidden");
+    lumivraDashboardView.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.location.hash = "dashboard";
+  }
+}
+
+function handleHashChange() {
+  const hash = window.location.hash;
+  if (hash === "#course-cs229" || hash === "#prototype" || hash === "#courses") {
+    showPrototype();
+  } else {
+    showLumivraDashboard();
+  }
+}
+
 // 1. INITIALIZATION
 async function initApp() {
   try {
@@ -381,19 +433,28 @@ async function initApp() {
     console.log("Using embedded static courseware for standalone hosting:", err);
   }
 
-  document.getElementById("course-title").textContent = courseData.title;
-  document.getElementById("course-module").textContent = courseData.module;
-  totalTimeDisplay.textContent = formatTime(courseData.totalDurationSeconds);
+  const courseTitleEl = document.getElementById("course-title");
+  const courseModuleEl = document.getElementById("course-module");
+  if (courseTitleEl) courseTitleEl.textContent = courseData.title;
+  if (courseModuleEl) courseModuleEl.textContent = courseData.module;
+  if (totalTimeDisplay) totalTimeDisplay.textContent = formatTime(courseData.totalDurationSeconds);
 
   renderTranscriptList();
   updateUIForTimestamp(currentSeconds);
   drawLectureFrame();
   setupEventListeners();
+
+  // Route depending on hash
+  if (window.location.hash === "#course-cs229" || window.location.hash === "#prototype" || window.location.hash === "#courses") {
+    showPrototype();
+  } else {
+    showLumivraDashboard();
+  }
 }
 
-// 2. CANVAS DRAWING (Matching the exact navy blackboard & synaptic diagram from the screenshot)
+// 2. CANVAS DRAWING (Navy blackboard & synaptic network)
 function drawLectureFrame() {
-  if (!canvas) return;
+  if (!canvas || !ctx) return;
   const width = canvas.width;
   const height = canvas.height;
 
@@ -567,9 +628,9 @@ function togglePlayPause() {
 
 function startPlayback() {
   isPlaying = true;
-  iconPlay.classList.add("hidden");
-  iconPause.classList.remove("hidden");
-  pauseAskPrompt.classList.add("hidden");
+  if (iconPlay) iconPlay.classList.add("hidden");
+  if (iconPause) iconPause.classList.remove("hidden");
+  if (pauseAskPrompt) pauseAskPrompt.classList.add("hidden");
 
   playInterval = setInterval(() => {
     if (currentSeconds >= (courseData ? courseData.totalDurationSeconds : 900)) {
@@ -586,12 +647,13 @@ function startPlayback() {
 function pausePlayback() {
   isPlaying = false;
   if (playInterval) clearInterval(playInterval);
-  iconPlay.classList.remove("hidden");
-  iconPause.classList.add("hidden");
+  if (iconPlay) iconPlay.classList.remove("hidden");
+  if (iconPause) iconPause.classList.add("hidden");
 
-  overlayPauseTime.textContent = formatTime(currentSeconds);
-  document.getElementById("btn-time-label").textContent = formatTime(currentSeconds);
-  pauseAskPrompt.classList.remove("hidden");
+  if (overlayPauseTime) overlayPauseTime.textContent = formatTime(currentSeconds);
+  const btnTimeLabel = document.getElementById("btn-time-label");
+  if (btnTimeLabel) btnTimeLabel.textContent = formatTime(currentSeconds);
+  if (pauseAskPrompt) pauseAskPrompt.classList.remove("hidden");
 
   drawLectureFrame();
 }
@@ -607,14 +669,14 @@ function updateUIForTimestamp(seconds) {
   if (!courseData) return;
   const formatted = formatTime(seconds);
 
-  currentTimeDisplay.textContent = formatted;
-  tagTimeLabel.textContent = formatted;
-  dividerTimeLabel.textContent = formatted;
-  bannerPauseTime.textContent = formatted;
+  if (currentTimeDisplay) currentTimeDisplay.textContent = formatted;
+  if (tagTimeLabel) tagTimeLabel.textContent = formatted;
+  if (dividerTimeLabel) dividerTimeLabel.textContent = formatted;
+  if (bannerPauseTime) bannerPauseTime.textContent = formatted;
 
   const total = courseData.totalDurationSeconds || 900;
   const pct = (seconds / total) * 100;
-  scrubberProgress.style.width = `${pct}%`;
+  if (scrubberProgress) scrubberProgress.style.width = `${pct}%`;
 
   // Find active slide based on current timestamp
   const activeSlide =
@@ -624,11 +686,11 @@ function updateUIForTimestamp(seconds) {
 
   activeSlideIndex = activeSlide.slideNumber - 1;
 
-  slideNumLabel.textContent = `SLIDE ${activeSlide.slideNumber} / ${courseData.slides.length}`;
-  slidePaginationText.textContent = `${activeSlide.slideNumber} of ${courseData.slides.length}`;
-  slideSyncPill.textContent = `🔗 Synced to video • ${formatted}`;
-  slideMainTitle.textContent = activeSlide.title;
-  slideSubDesc.textContent = activeSlide.subtitle;
+  if (slideNumLabel) slideNumLabel.textContent = `SLIDE ${activeSlide.slideNumber} / ${courseData.slides.length}`;
+  if (slidePaginationText) slidePaginationText.textContent = `${activeSlide.slideNumber} of ${courseData.slides.length}`;
+  if (slideSyncPill) slideSyncPill.textContent = `🔗 Synced to video • ${formatted}`;
+  if (slideMainTitle) slideMainTitle.textContent = activeSlide.title;
+  if (slideSubDesc) slideSubDesc.textContent = activeSlide.subtitle;
 
   // Find active connected reading
   const activePdf =
@@ -636,19 +698,21 @@ function updateUIForTimestamp(seconds) {
       (p) => seconds >= p.relevantSecondsStart && seconds <= p.relevantSecondsEnd
     ) || courseData.pdfReadingNotes[1] || courseData.pdfReadingNotes[0];
 
-  readingChapLabel.textContent = `Chapter ${activePdf.chapterNumber}`;
-  readingSecTitle.textContent = activePdf.title;
-  readingSynopsis.textContent = activePdf.contentSnippet;
+  if (readingChapLabel) readingChapLabel.textContent = `Chapter ${activePdf.chapterNumber}`;
+  if (readingSecTitle) readingSecTitle.textContent = activePdf.title;
+  if (readingSynopsis) readingSynopsis.textContent = activePdf.contentSnippet;
 
   // Within horizon check
-  if (seconds >= activePdf.relevantSecondsStart) {
-    readingHorizonPill.innerHTML = `<span>✓</span> Within your horizon`;
-    readingHorizonPill.style.color = "var(--primary)";
-    readingHorizonPill.style.backgroundColor = "var(--primary-light)";
-  } else {
-    readingHorizonPill.innerHTML = `<span>🔒</span> Future reading material`;
-    readingHorizonPill.style.color = "var(--text-muted)";
-    readingHorizonPill.style.backgroundColor = "var(--border-subtle)";
+  if (readingHorizonPill) {
+    if (seconds >= activePdf.relevantSecondsStart) {
+      readingHorizonPill.innerHTML = `<span>✓</span> Within your horizon`;
+      readingHorizonPill.style.color = "var(--primary)";
+      readingHorizonPill.style.backgroundColor = "var(--primary-light)";
+    } else {
+      readingHorizonPill.innerHTML = `<span>🔒</span> Future reading material`;
+      readingHorizonPill.style.color = "var(--text-muted)";
+      readingHorizonPill.style.backgroundColor = "var(--border-subtle)";
+    }
   }
 
   highlightActiveTranscript(seconds);
@@ -656,6 +720,7 @@ function updateUIForTimestamp(seconds) {
 }
 
 function highlightActiveTranscript(seconds) {
+  if (!transcriptList) return;
   const rows = transcriptList.querySelectorAll(".transcript-chunk-item");
   rows.forEach((row) => {
     const start = parseFloat(row.getAttribute("data-start"));
@@ -670,7 +735,7 @@ function highlightActiveTranscript(seconds) {
 }
 
 function renderHorizonBar(seconds) {
-  if (!courseData) return;
+  if (!courseData || !horizonBarChunks) return;
   const chunks = courseData.transcriptChunks;
   let accessible = 0;
   let blocked = 0;
@@ -693,7 +758,6 @@ function renderHorizonBar(seconds) {
           chunkClass += " blocked";
         }
       } else {
-        // Naive RAG mode
         if (isPast) {
           chunkClass += " accessible";
         } else {
@@ -711,13 +775,13 @@ function renderHorizonBar(seconds) {
     })
     .join("");
 
-  statAccessibleCount.textContent = currentRagMode === "temporal" ? accessible : chunks.length;
-  statBlockedCount.textContent = currentRagMode === "temporal" ? blocked : 0;
-  horizonHereLabel.textContent = `${formatTime(seconds)} • YOU ARE HERE`;
+  if (statAccessibleCount) statAccessibleCount.textContent = currentRagMode === "temporal" ? accessible : chunks.length;
+  if (statBlockedCount) statBlockedCount.textContent = currentRagMode === "temporal" ? blocked : 0;
+  if (horizonHereLabel) horizonHereLabel.textContent = `${formatTime(seconds)} • YOU ARE HERE`;
 }
 
 function renderTranscriptList() {
-  if (!courseData) return;
+  if (!courseData || !transcriptList) return;
   transcriptList.innerHTML = courseData.transcriptChunks
     .map(
       (c) => `
@@ -733,7 +797,7 @@ function renderTranscriptList() {
     .join("");
 }
 
-// 5. RAG RESPONSE LOGIC (Standalone & Server Fallback)
+// 5. RAG RESPONSE LOGIC
 function getGroundedResponse(query, pauseSeconds, mode) {
   const qLower = query.toLowerCase();
   const currentFormatted = formatTime(pauseSeconds);
@@ -745,10 +809,8 @@ function getGroundedResponse(query, pauseSeconds, mode) {
   const isBackprop = qLower.includes("backprop") || qLower.includes("chain rule") || qLower.includes("future");
   const isXor = qLower.includes("xor") || qLower.includes("minsky") || qLower.includes("limitation");
   const isAlpha = qLower.includes("alpha") || qLower.includes("learning rate") || qLower.includes("gradient");
-  const isActivations = qLower.includes("activation") || qLower.includes("sigmoid") || qLower.includes("relu") || qLower.includes("current");
 
   if (mode === "temporal") {
-    // Teaser Guardrail for Backprop asked at 02:30
     if (isBackprop && pauseSeconds < 750) {
       return {
         answer: `You're thinking ahead! At your current lecture timestamp **[${currentFormatted}]**, the class hasn't covered Backpropagation yet.\n\n` +
@@ -809,13 +871,13 @@ function getGroundedResponse(query, pauseSeconds, mode) {
 // 6. CHAT SUBMISSION HANDLER
 function handleChatSubmit(e) {
   if (e) e.preventDefault();
+  if (!chatQueryInput) return;
   const query = chatQueryInput.value.trim();
   if (!query) return;
 
   appendUserMessage(query);
   chatQueryInput.value = "";
 
-  // Render response
   setTimeout(() => {
     const res = getGroundedResponse(query, currentSeconds, currentRagMode);
     appendBotMessage(res);
@@ -823,6 +885,7 @@ function handleChatSubmit(e) {
 }
 
 function appendUserMessage(text) {
+  if (!chatMessagesContainer) return;
   const userBlock = document.createElement("div");
   userBlock.className = "user-msg-block";
   userBlock.textContent = text;
@@ -831,6 +894,7 @@ function appendUserMessage(text) {
 }
 
 function appendBotMessage(data) {
+  if (!chatMessagesContainer) return;
   const botBlock = document.createElement("div");
   botBlock.className = "copilot-message-block";
 
@@ -862,60 +926,130 @@ function appendBotMessage(data) {
 
 // 7. EVENT LISTENERS SETUP
 function setupEventListeners() {
-  btnPlayPause.addEventListener("click", togglePlayPause);
-  btnRewind.addEventListener("click", () => seekToSeconds(currentSeconds - 10));
-  btnForward.addEventListener("click", () => seekToSeconds(currentSeconds + 10));
+  // --- LUMIVRA NAVIGATION EVENTS ---
+  // 1. "Find My Courses" Card -> reveals prototype
+  if (cardFindCourses) {
+    cardFindCourses.addEventListener("click", () => showPrototype());
+  }
 
-  // Scrubber bar seeking
-  scrubberBar.addEventListener("click", (e) => {
-    const rect = scrubberBar.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const pct = Math.max(0, Math.min(1, clickX / rect.width));
-    const total = courseData.totalDurationSeconds || 900;
-    seekToSeconds(pct * total);
-  });
+  // 2. "Start Learning ->" Hero button -> reveals prototype
+  if (heroBtnStartLearning) {
+    heroBtnStartLearning.addEventListener("click", () => showPrototype());
+  }
 
-  // Focus doubt button in pause overlay
-  btnFocusDoubt.addEventListener("click", () => {
-    chatQueryInput.focus();
-    chatQueryInput.placeholder = `Ask your doubt at ${formatTime(currentSeconds)}...`;
-  });
+  // 3. "Continue Module 2" task row -> reveals prototype
+  if (taskContinueModule2) {
+    taskContinueModule2.addEventListener("click", () => showPrototype(150));
+  }
 
-  // Retrieval mode toggle
-  btnModeTemporal.addEventListener("click", () => setRagMode("temporal"));
-  btnModeNaive.addEventListener("click", () => setRagMode("naive"));
-
-  // Quick prompt chips
-  promptChips.querySelectorAll(".quick-prompt-btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const q = btn.getAttribute("data-q");
-      chatQueryInput.value = q;
-      handleChatSubmit();
+  // 4. "View all ->" tasks link -> reveals prototype
+  if (linkViewAllTasks) {
+    linkViewAllTasks.addEventListener("click", (e) => {
+      e.preventDefault();
+      showPrototype();
     });
-  });
+  }
 
-  // Chat Form
-  chatForm.addEventListener("submit", handleChatSubmit);
+  // 5. Lumivra "Study Resources" Card -> opens prototype to reading notes
+  const cardStudyResources = document.getElementById("card-study-resources");
+  if (cardStudyResources) {
+    cardStudyResources.addEventListener("click", () => {
+      showPrototype();
+      const pdfTabBtn = document.querySelector('[data-tab="tab-pdf"]');
+      if (pdfTabBtn) pdfTabBtn.click();
+    });
+  }
 
-  // Clear chat
-  btnClearChat.addEventListener("click", () => {
-    chatMessagesContainer.innerHTML = `
-      <div class="lecture-pause-divider">
-        <span>LECTURE PAUSED • <span>${formatTime(currentSeconds)}</span></span>
-      </div>
-      <div class="copilot-message-block">
-        <div class="msg-header-line">
-          <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
-          <span class="msg-timestamp">Just now</span>
+  // 6. Lumivra "My Progress" Card -> scrolls smoothly to progress section
+  const cardMyProgress = document.getElementById("card-my-progress");
+  if (cardMyProgress) {
+    cardMyProgress.addEventListener("click", () => {
+      const bottomGrid = document.querySelector(".lumivra-bottom-grid");
+      if (bottomGrid) bottomGrid.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  // 7. Lumivra "Community" Card -> interactive notice
+  const cardCommunity = document.getElementById("card-community");
+  if (cardCommunity) {
+    cardCommunity.addEventListener("click", () => {
+      alert("💬 Lumivra Community: 42 students are actively discussing Module 2: Non-Linearity & Perceptrons! Opening course workspace...");
+      showPrototype();
+    });
+  }
+
+  // --- RETURN TO LUMIVRA EVENTS ---
+  if (btnBackToDashboard) {
+    btnBackToDashboard.addEventListener("click", () => showLumivraDashboard());
+  }
+  if (breadcrumbLumivraHome) {
+    breadcrumbLumivraHome.addEventListener("click", () => showLumivraDashboard());
+  }
+  if (navBrandHome) {
+    navBrandHome.addEventListener("click", () => showLumivraDashboard());
+  }
+
+  // Browser hash change listener
+  window.addEventListener("hashchange", handleHashChange);
+
+  // --- PROTOTYPE PLAYER CONTROLS ---
+  if (btnPlayPause) btnPlayPause.addEventListener("click", togglePlayPause);
+  if (btnRewind) btnRewind.addEventListener("click", () => seekToSeconds(currentSeconds - 10));
+  if (btnForward) btnForward.addEventListener("click", () => seekToSeconds(currentSeconds + 10));
+
+  if (scrubberBar) {
+    scrubberBar.addEventListener("click", (e) => {
+      const rect = scrubberBar.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const pct = Math.max(0, Math.min(1, clickX / rect.width));
+      const total = courseData.totalDurationSeconds || 900;
+      seekToSeconds(pct * total);
+    });
+  }
+
+  if (btnFocusDoubt && chatQueryInput) {
+    btnFocusDoubt.addEventListener("click", () => {
+      chatQueryInput.focus();
+      chatQueryInput.placeholder = `Ask your doubt at ${formatTime(currentSeconds)}...`;
+    });
+  }
+
+  if (btnModeTemporal) btnModeTemporal.addEventListener("click", () => setRagMode("temporal"));
+  if (btnModeNaive) btnModeNaive.addEventListener("click", () => setRagMode("naive"));
+
+  if (promptChips) {
+    promptChips.querySelectorAll(".quick-prompt-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const q = btn.getAttribute("data-q");
+        if (chatQueryInput) {
+          chatQueryInput.value = q;
+          handleChatSubmit();
+        }
+      });
+    });
+  }
+
+  if (chatForm) chatForm.addEventListener("submit", handleChatSubmit);
+
+  if (btnClearChat && chatMessagesContainer) {
+    btnClearChat.addEventListener("click", () => {
+      chatMessagesContainer.innerHTML = `
+        <div class="lecture-pause-divider">
+          <span>LECTURE PAUSED • <span>${formatTime(currentSeconds)}</span></span>
         </div>
-        <div class="msg-content-text">
-          <p>Chat cleared. Ask any doubt grounded in what you've learned so far!</p>
+        <div class="copilot-message-block">
+          <div class="msg-header-line">
+            <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
+            <span class="msg-timestamp">Just now</span>
+          </div>
+          <div class="msg-content-text">
+            <p>Chat cleared. Ask any doubt grounded in what you've learned so far!</p>
+          </div>
         </div>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
 
-  // Middleware tabs
   document.querySelectorAll(".mw-tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".mw-tab-btn").forEach((b) => b.classList.remove("active"));
@@ -928,72 +1062,92 @@ function setupEventListeners() {
     });
   });
 
-  // Slide navigation arrows
-  btnPrevSlide.addEventListener("click", () => {
-    if (activeSlideIndex > 0) {
-      activeSlideIndex--;
-      seekToSeconds(courseData.slides[activeSlideIndex].activeFromSeconds);
-    }
-  });
+  if (btnPrevSlide) {
+    btnPrevSlide.addEventListener("click", () => {
+      if (activeSlideIndex > 0) {
+        activeSlideIndex--;
+        seekToSeconds(courseData.slides[activeSlideIndex].activeFromSeconds);
+      }
+    });
+  }
 
-  btnNextSlide.addEventListener("click", () => {
-    if (activeSlideIndex < courseData.slides.length - 1) {
-      activeSlideIndex++;
-      seekToSeconds(courseData.slides[activeSlideIndex].activeFromSeconds);
-    }
-  });
+  if (btnNextSlide) {
+    btnNextSlide.addEventListener("click", () => {
+      if (activeSlideIndex < courseData.slides.length - 1) {
+        activeSlideIndex++;
+        seekToSeconds(courseData.slides[activeSlideIndex].activeFromSeconds);
+      }
+    });
+  }
 
-  // Speed cycle
   const speedBtn = document.getElementById("btn-speed-cycle");
-  speedBtn.addEventListener("click", () => {
-    if (playbackSpeed === 1.0) playbackSpeed = 1.25;
-    else if (playbackSpeed === 1.25) playbackSpeed = 1.5;
-    else playbackSpeed = 1.0;
-    speedBtn.textContent = `${playbackSpeed}x`;
-  });
+  if (speedBtn) {
+    speedBtn.addEventListener("click", () => {
+      if (playbackSpeed === 1.0) playbackSpeed = 1.25;
+      else if (playbackSpeed === 1.25) playbackSpeed = 1.5;
+      else playbackSpeed = 1.0;
+      speedBtn.textContent = `${playbackSpeed}x`;
+    });
+  }
 
-  // Fullscreen button
   const fsBtn = document.getElementById("btn-fullscreen");
-  fsBtn.addEventListener("click", () => {
-    const card = document.querySelector(".video-card-container");
-    if (!document.fullscreenElement) {
-      card.requestFullscreen().catch((err) => console.log(err));
-    } else {
-      document.exitFullscreen();
-    }
-  });
+  if (fsBtn) {
+    fsBtn.addEventListener("click", () => {
+      const card = document.querySelector(".video-card-container");
+      if (!document.fullscreenElement) {
+        if (card) card.requestFullscreen().catch((err) => console.log(err));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+  }
 
-  // Architecture & Help Modal
-  btnOpenArch.addEventListener("click", () => archModal.classList.remove("hidden"));
-  if (btnHelpModal) btnHelpModal.addEventListener("click", () => archModal.classList.remove("hidden"));
-  btnCloseModal.addEventListener("click", () => archModal.classList.add("hidden"));
-  archModal.addEventListener("click", (e) => {
-    if (e.target === archModal) archModal.classList.add("hidden");
-  });
+  if (btnOpenArch && archModal) {
+    btnOpenArch.addEventListener("click", () => archModal.classList.remove("hidden"));
+  }
+  if (btnHelpModal && archModal) {
+    btnHelpModal.addEventListener("click", () => archModal.classList.remove("hidden"));
+  }
+  if (btnCloseModal && archModal) {
+    btnCloseModal.addEventListener("click", () => archModal.classList.add("hidden"));
+  }
+  if (archModal) {
+    archModal.addEventListener("click", (e) => {
+      if (e.target === archModal) archModal.classList.add("hidden");
+    });
+  }
 }
 
 function setRagMode(mode) {
   currentRagMode = mode;
   if (mode === "temporal") {
-    btnModeTemporal.classList.add("active");
-    btnModeNaive.classList.remove("active");
-    guardrailStatusPill.className = "horizon-status-badge";
-    statusText.textContent = "Horizon Masking: Active";
-    horizonDemoTag.textContent = "0.0% future leakage • Demo";
-    ragLabelTemporal.className = "boundary-mode-name active-rag";
-    ragLabelTemporal.textContent = "Temporal RAG - selected";
-    ragLabelNaive.className = "boundary-mode-name inactive-rag";
-    ragLabelNaive.textContent = "Naive RAG";
+    if (btnModeTemporal) btnModeTemporal.classList.add("active");
+    if (btnModeNaive) btnModeNaive.classList.remove("active");
+    if (guardrailStatusPill) guardrailStatusPill.className = "horizon-status-badge";
+    if (statusText) statusText.textContent = "Horizon Masking: Active";
+    if (horizonDemoTag) horizonDemoTag.textContent = "0.0% future leakage • Demo";
+    if (ragLabelTemporal) {
+      ragLabelTemporal.className = "boundary-mode-name active-rag";
+      ragLabelTemporal.textContent = "Temporal RAG - selected";
+    }
+    if (ragLabelNaive) {
+      ragLabelNaive.className = "boundary-mode-name inactive-rag";
+      ragLabelNaive.textContent = "Naive RAG";
+    }
   } else {
-    btnModeNaive.classList.add("active");
-    btnModeTemporal.classList.remove("active");
-    guardrailStatusPill.className = "horizon-status-badge mode-naive";
-    statusText.textContent = "Horizon Masking: Inactive";
-    horizonDemoTag.textContent = "Future Spoilers Unlocked";
-    ragLabelNaive.className = "boundary-mode-name active-rag";
-    ragLabelNaive.textContent = "Naive RAG - selected";
-    ragLabelTemporal.className = "boundary-mode-name inactive-rag";
-    ragLabelTemporal.textContent = "Temporal RAG";
+    if (btnModeNaive) btnModeNaive.classList.add("active");
+    if (btnModeTemporal) btnModeTemporal.classList.remove("active");
+    if (guardrailStatusPill) guardrailStatusPill.className = "horizon-status-badge mode-naive";
+    if (statusText) statusText.textContent = "Horizon Masking: Inactive";
+    if (horizonDemoTag) horizonDemoTag.textContent = "Future Spoilers Unlocked";
+    if (ragLabelNaive) {
+      ragLabelNaive.className = "boundary-mode-name active-rag";
+      ragLabelNaive.textContent = "Naive RAG - selected";
+    }
+    if (ragLabelTemporal) {
+      ragLabelTemporal.className = "boundary-mode-name inactive-rag";
+      ragLabelTemporal.textContent = "Temporal RAG";
+    }
   }
   renderHorizonBar(currentSeconds);
 }

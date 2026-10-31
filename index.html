@@ -3,569 +3,986 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Temporal RAG — A Canvas learning companion</title>
+  <title>Lumivra — AI Learning Assistant & Companion</title>
   <link rel="stylesheet" href="styles.css">
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- 1. TOP NAVBAR -->
-  <nav class="top-nav">
-    <div class="nav-brand">
-      <div class="brand-logo-icon">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-          <polyline points="2 17 12 22 22 17"></polyline>
-          <polyline points="2 12 12 17 22 12"></polyline>
-        </svg>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 1: LUMIVRA DASHBOARD (MATCHING SCREENSHOT)          -->
+  <!-- ======================================================== -->
+  <div id="lumivra-dashboard-view" class="lumivra-page">
+    <!-- Top Nav -->
+    <header class="lumivra-nav">
+      <div class="lumivra-logo-wrap" id="nav-brand-home">
+        <div class="lumivra-logo-icon">
+          <!-- Stylized Book Logo -->
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="4" r="2" fill="currentColor"></circle>
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 7H20v13H6.5A2.5 2.5 0 0 1 4 17.5v-8A2.5 2.5 0 0 1 6.5 7z"></path>
+          </svg>
+        </div>
+        <span class="lumivra-brand-text">Lumivra</span>
       </div>
-      <span class="brand-title">Temporal RAG</span>
-      <span class="brand-separator">|</span>
-      <span class="brand-subtitle">A Canvas learning companion</span>
-    </div>
 
-    <div class="nav-actions">
-      <button class="nav-pill-btn" id="btn-open-architecture" title="View Technical Architecture & Data Flow">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="7" height="7"></rect>
-          <rect x="14" y="3" width="7" height="7"></rect>
-          <rect x="14" y="14" width="7" height="7"></rect>
-          <rect x="3" y="14" width="7" height="7"></rect>
+      <button class="lumivra-user-icon-btn" title="Student Profile">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
         </svg>
-        <span>Architecture</span>
       </button>
+    </header>
 
-      <a href="api-docs.html" class="nav-pill-btn" title="Interactive API Tester">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="16 18 22 12 16 6"></polyline>
-          <polyline points="8 6 2 12 8 18"></polyline>
-        </svg>
-        <span>API Docs</span>
-      </a>
-
-      <button class="nav-circle-btn" id="btn-help-modal" title="Help & System Info">?</button>
-      <div class="user-avatar-pill" title="Student Profile">AS</div>
-    </div>
-  </nav>
-
-  <!-- 2. COURSE BREADCRUMBS & MODULE TITLE ROW -->
-  <div class="course-header-bar">
-    <div class="course-breadcrumbs">
-      <span class="breadcrumb-link">My courses</span>
-      <span class="breadcrumb-sep">›</span>
-      <span id="course-title" class="breadcrumb-link">CS229: Foundations of Deep Learning</span>
-    </div>
-    <div class="course-title-row">
-      <h1 class="course-module-title" id="course-module">Module 2: Perceptrons, Loss Surfaces & Backpropagation</h1>
-      <div class="horizon-status-badge" id="guardrail-status-pill">
-        <span>🛡️</span>
-        <span id="status-text">Horizon Masking: Active</span>
+    <!-- Main Container -->
+    <main class="lumivra-container">
+      <!-- Welcome Greeting -->
+      <div class="lumivra-greeting-block">
+        <span class="greeting-time-sub">Good morning, Student!</span>
+        <h1 class="greeting-main-title">Welcome back!</h1>
       </div>
-    </div>
-  </div>
 
-  <!-- 3. SUB-TOOLBAR / WORKSPACE NAV & RETRIEVAL TOGGLE -->
-  <div class="workspace-toolbar">
-    <div class="workspace-tabs">
-      <button class="workspace-tab active" data-wstab="workspace">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-          <line x1="8" y1="21" x2="16" y2="21"></line>
-          <line x1="12" y1="17" x2="12" y2="21"></line>
-        </svg>
-        Lecture workspace
-      </button>
-      <button class="workspace-tab" data-wstab="notes">
-        My notes
-      </button>
-    </div>
+      <!-- Hero AI Learning Assistant Banner -->
+      <section class="lumivra-hero-banner">
+        <div class="hero-left-section">
+          <!-- Cute 3D Robot Mascot Illustration inside Lilac Circle -->
+          <div class="hero-robot-circle">
+            <svg width="115" height="115" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="robotHeadGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#ffffff"/>
+                  <stop offset="100%" stop-color="#e2e8f0"/>
+                </linearGradient>
+                <linearGradient id="robotScreenGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#111827"/>
+                  <stop offset="100%" stop-color="#1e1b4b"/>
+                </linearGradient>
+                <linearGradient id="eyeGlow" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#a855f7"/>
+                  <stop offset="100%" stop-color="#818cf8"/>
+                </linearGradient>
+                <linearGradient id="bookCoverGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#4f46e5"/>
+                </linearGradient>
+                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
+                  <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#4338ca" flood-opacity="0.15"/>
+                </filter>
+              </defs>
 
-    <div class="retrieval-mode-control">
-      <span class="retrieval-label">RETRIEVAL MODE</span>
-      <div class="segmented-control" id="rag-mode-toggle">
-        <button class="seg-btn active" id="btn-mode-temporal" data-mode="temporal" title="Horizon Masking: 0% Future Leakage">
-          Temporal RAG
-        </button>
-        <button class="seg-btn" id="btn-mode-naive" data-mode="naive" title="Unmasked: Retrieves Future Topics Early">
-          Naive RAG
-        </button>
-      </div>
-    </div>
-  </div>
+              <!-- Floor shadow -->
+              <ellipse cx="70" cy="126" rx="42" ry="7" fill="#cbd5e1" opacity="0.6"/>
 
-  <!-- 4. MAIN CONTENT TWO-COLUMN GRID -->
-  <main class="main-content-layout">
-    <!-- LEFT COLUMN: VIDEO + HORIZON + MIDDLEWARE -->
-    <section class="left-workspace-column">
-      <!-- 1. VIDEO PLAYER CARD -->
-      <div class="video-card-container">
-        <div class="video-screen-wrapper">
-          <canvas id="lecture-canvas" width="800" height="450"></canvas>
-          
-          <!-- Pause to Ask Overlay -->
-          <div class="pause-ask-overlay hidden" id="pause-ask-prompt">
-            <div class="overlay-content-left">
-              <span class="overlay-pause-badge">⏸️</span>
-              <div class="overlay-text-block">
-                <strong>Paused at <span id="overlay-pause-time">02:30</span></strong>
-                <p>Have a doubt right here? Ask your AI Co-Pilot without losing context.</p>
+              <!-- Robot Ears / Headsets -->
+              <rect x="25" y="44" width="8" height="16" rx="4" fill="#cbd5e1"/>
+              <rect x="107" y="44" width="8" height="16" rx="4" fill="#cbd5e1"/>
+              <circle cx="29" cy="52" r="3" fill="#818cf8"/>
+              <circle cx="111" cy="52" r="3" fill="#818cf8"/>
+
+              <!-- Antenna -->
+              <line x1="70" y1="26" x2="70" y2="17" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="70" cy="14" r="5" fill="#818cf8"/>
+
+              <!-- Head -->
+              <rect x="30" y="24" width="80" height="56" rx="26" fill="url(#robotHeadGrad)" filter="url(#softShadow)"/>
+              
+              <!-- Screen Face -->
+              <rect x="40" y="34" width="60" height="36" rx="14" fill="url(#robotScreenGrad)"/>
+
+              <!-- Cute Smiling Eyes -->
+              <path d="M 48 50 Q 55 43 62 50" stroke="url(#eyeGlow)" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M 78 50 Q 85 43 92 50" stroke="url(#eyeGlow)" stroke-width="4" stroke-linecap="round" fill="none"/>
+
+              <!-- Body / Torso -->
+              <rect x="46" y="78" width="48" height="38" rx="16" fill="url(#robotHeadGrad)"/>
+              <rect x="54" y="84" width="32" height="24" rx="8" fill="#f1f5f9"/>
+
+              <!-- Crossed Sitting Legs / Feet -->
+              <ellipse cx="44" cy="116" rx="12" ry="7" fill="#e2e8f0"/>
+              <ellipse cx="96" cy="116" rx="12" ry="7" fill="#e2e8f0"/>
+
+              <!-- Open Book held by Robot -->
+              <!-- Left Cover & Pages -->
+              <path d="M 68 104 L 40 92 L 46 114 L 68 116 Z" fill="url(#bookCoverGrad)"/>
+              <path d="M 68 102 L 42 93 L 47 112 L 68 114 Z" fill="#ffffff"/>
+              <!-- Right Cover & Pages -->
+              <path d="M 72 104 L 100 92 L 94 114 L 72 116 Z" fill="url(#bookCoverGrad)"/>
+              <path d="M 72 102 L 98 93 L 93 112 L 72 114 Z" fill="#ffffff"/>
+              <!-- Book Center Spine -->
+              <line x1="70" y1="102" x2="70" y2="116" stroke="#3730a3" stroke-width="2"/>
+
+              <!-- Robot Hands on Book -->
+              <circle cx="43" cy="103" r="6" fill="#ffffff"/>
+              <circle cx="97" cy="103" r="6" fill="#ffffff"/>
+            </svg>
+          </div>
+
+          <div class="hero-text-content">
+            <span class="hero-eyebrow">A LITTLE HELP, A LOT MORE CLARITY.</span>
+            <h2 class="hero-title">AI Learning Assistant</h2>
+            <p class="hero-description">
+              Ask questions, unpack tricky concepts, and keep moving. Get cited answers from your lecture, up to where you've watched.
+            </p>
+            <div class="hero-actions-row">
+              <button class="btn-start-learning" id="hero-btn-start-learning">
+                Start Learning <span>→</span>
+              </button>
+              <span class="hero-course-tag">CS229 • Module 2</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-right-badge">
+          <div class="hero-shield-icon-wrap">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <div class="hero-badge-headline">
+            No spoilers.<br>Just learning.
+          </div>
+          <span class="hero-badge-sub">Help that meets you where you are.</span>
+        </div>
+      </section>
+
+      <!-- 4 Primary Action Cards Grid (Find My Courses triggers prototype!) -->
+      <section class="lumivra-action-cards-grid">
+        <!-- CARD 1: FIND MY COURSES (TRIGGER) -->
+        <div class="action-card" id="card-find-courses" title="Click to view CS229: Foundations of Deep Learning">
+          <div class="action-card-header">
+            <div class="card-icon-box card-icon-cyan">
+              <!-- Graduation Cap -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+              </svg>
+            </div>
+            <span class="card-arrow-icon">↗</span>
+          </div>
+          <h3 class="action-card-title">Find My Courses</h3>
+          <p class="action-card-desc">Your next moment of discovery</p>
+        </div>
+
+        <!-- CARD 2: STUDY RESOURCES -->
+        <div class="action-card" id="card-study-resources">
+          <div class="action-card-header">
+            <div class="card-icon-box card-icon-peach">
+              <!-- Book Icon -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </div>
+            <span class="card-arrow-icon">↗</span>
+          </div>
+          <h3 class="action-card-title">Study Resources</h3>
+          <p class="action-card-desc">Slides, PDFs, and your notes</p>
+        </div>
+
+        <!-- CARD 3: MY PROGRESS -->
+        <div class="action-card" id="card-my-progress">
+          <div class="action-card-header">
+            <div class="card-icon-box card-icon-purple">
+              <!-- Bar chart -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+            </div>
+            <span class="card-arrow-icon">↗</span>
+          </div>
+          <h3 class="action-card-title">My Progress</h3>
+          <p class="action-card-desc">See how far you've come</p>
+        </div>
+
+        <!-- CARD 4: COMMUNITY -->
+        <div class="action-card" id="card-community">
+          <div class="action-card-header">
+            <div class="card-icon-box card-icon-indigo">
+              <!-- Chat bubbles -->
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <span class="card-arrow-icon">↗</span>
+          </div>
+          <h3 class="action-card-title">Community</h3>
+          <p class="action-card-desc">Learn alongside curious minds</p>
+        </div>
+      </section>
+
+      <!-- Bottom Three-Column Dashboard Grid -->
+      <section class="lumivra-bottom-grid">
+        <!-- COLUMN 1: YOUR LEARNING PROGRESS -->
+        <div class="dashboard-panel-card">
+          <div class="panel-card-header">
+            <div class="panel-card-title-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+              <span>Your Learning Progress</span>
+            </div>
+          </div>
+
+          <div class="progress-content-split">
+            <!-- 70% Circular Donut -->
+            <div class="progress-donut-container">
+              <svg width="90" height="90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="38" stroke="#f1f5f9" stroke-width="9" fill="none"/>
+                <circle cx="50" cy="50" r="38" stroke="#4f46e5" stroke-width="9" fill="none"
+                        stroke-dasharray="238.76" stroke-dashoffset="71.6" stroke-linecap="round"
+                        transform="rotate(-90 50 50)"/>
+              </svg>
+              <div class="progress-donut-text">
+                <span class="donut-percent">70%</span>
+                <span class="donut-sub">of your weekly goal</span>
               </div>
             </div>
-            <button class="btn-overlay-ask" id="btn-focus-doubt">Ask Question at <span id="btn-time-label">02:30</span></button>
-          </div>
-        </div>
 
-        <!-- Video Scrubber Bar -->
-        <div class="video-scrub-bar" id="scrubber-bar" title="Click to seek anywhere in the lecture">
-          <div class="video-scrub-progress" id="scrubber-progress">
-            <div class="video-scrub-handle" id="scrubber-handle"></div>
-          </div>
-        </div>
-
-        <!-- Video Controls Bar -->
-        <div class="video-controls-row">
-          <div class="ctrl-group-left">
-            <button class="ctrl-btn" id="btn-play-pause" title="Play / Pause">
-              <svg id="icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3"></polygon>
-              </svg>
-              <svg id="icon-pause" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="6" y="4" width="4" height="16"></rect>
-                <rect x="14" y="4" width="4" height="16"></rect>
-              </svg>
-            </button>
-
-            <button class="ctrl-btn" id="btn-rewind" title="Rewind 10s">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
-              </svg>
-            </button>
-
-            <button class="ctrl-btn" id="btn-forward" title="Forward 10s">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
-              </svg>
-            </button>
-
-            <button class="ctrl-btn" id="btn-mute-toggle" title="Volume">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-              </svg>
-            </button>
-
-            <span class="video-time-counter">
-              <span id="current-time-display">02:30</span> / <span id="total-time-display">15:00</span>
-            </span>
-          </div>
-
-          <div class="ctrl-group-right">
-            <button class="btn-speed-pill" id="btn-speed-cycle" title="Playback Speed">1x</button>
-            <button class="ctrl-btn" title="Subtitles (CC)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
-                <path d="M7 15h3M7 11h3M14 15h3M14 11h3"></path>
-              </svg>
-            </button>
-            <button class="ctrl-btn" title="Playback Settings">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="4" y1="21" x2="4" y2="14"></line>
-                <line x1="4" y1="10" x2="4" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12" y2="3"></line>
-                <line x1="20" y1="21" x2="20" y2="16"></line>
-                <line x1="20" y1="12" x2="20" y2="3"></line>
-                <line x1="1" y1="14" x2="7" y2="14"></line>
-                <line x1="9" y1="8" x2="15" y2="8"></line>
-                <line x1="17" y1="16" x2="23" y2="16"></line>
-              </svg>
-            </button>
-            <button class="ctrl-btn" title="Fullscreen" id="btn-fullscreen">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <polyline points="9 21 3 21 3 15"></polyline>
-                <line x1="21" y1="3" x2="14" y2="10"></line>
-                <line x1="3" y1="21" x2="10" y2="14"></line>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- 2. YOUR KNOWLEDGE HORIZON CARD -->
-      <div class="horizon-card">
-        <div class="horizon-header-row">
-          <div class="horizon-title-group">
-            <svg class="horizon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"></circle>
-              <line x1="12" y1="6" x2="12" y2="12"></line>
-              <line x1="12" y1="12" x2="16" y2="14"></line>
-            </svg>
-            <span>Your knowledge horizon</span>
-          </div>
-          <span class="horizon-pill-demo" id="horizon-demo-tag">0.0% future leakage • Demo</span>
-        </div>
-
-        <div class="horizon-markers-row">
-          <span>00:00</span>
-          <span class="horizon-here-marker" id="horizon-here-label">02:30 • YOU ARE HERE</span>
-          <span>15:00</span>
-        </div>
-
-        <!-- 14 discrete chunk blocks -->
-        <div class="horizon-chunks-grid" id="horizon-bar-chunks">
-          <!-- Dynamically populated or rendered -->
-        </div>
-
-        <div class="horizon-footer-row">
-          <div class="horizon-legend-left">
-            <span class="legend-accessible-tag">
-              <span class="legend-dot-purple"></span>
-              <span id="stat-accessible-count">5</span> accessible past chunks
-            </span>
-            <span class="legend-blocked-tag">
-              <span>🔒</span>
-              <span id="stat-blocked-count">9</span> blocked future chunks
-            </span>
-          </div>
-          <div class="horizon-footer-right" id="horizon-footer-note">
-            Future context excluded before search
-          </div>
-        </div>
-      </div>
-
-      <!-- 3. MULTI-SOURCE MIDDLEWARE VIEWER -->
-      <div class="middleware-card">
-        <div class="middleware-tabs-bar">
-          <button class="mw-tab-btn active" data-tab="tab-slide">
-            <span>📊</span> Synced PPT Slide
-          </button>
-          <button class="mw-tab-btn" data-tab="tab-pdf">
-            <span>📄</span> Reading Notes (PDF)
-          </button>
-          <button class="mw-tab-btn" data-tab="tab-transcript">
-            <span>🎙️</span> Spoken Transcript
-          </button>
-          <button class="mw-tab-btn" data-tab="tab-card">
-            <span>⚡</span> 2-Minute Context Card
-          </button>
-        </div>
-
-        <div class="mw-content-container">
-          <!-- TAB 1: SYNCHRONIZED PPT SLIDE (2-COLUMN VIEW) -->
-          <div class="tab-pane active" id="tab-slide">
-            <div class="slide-two-column-view">
-              <!-- Left: Slide content + Function plots -->
-              <div class="slide-left-col">
-                <div class="slide-top-meta">
-                  <span class="slide-num-label" id="slide-num-label">SLIDE 2 / 6</span>
-                  <span class="slide-sync-pill" id="slide-sync-pill">🔗 Synced to video • 02:30</span>
-                </div>
-                <h3 class="slide-main-title" id="slide-main-title">Non-Linear Activation Functions</h3>
-                <p class="slide-sub-desc" id="slide-sub-desc">Non-linearity allows a network to learn beyond linear boundaries.</p>
-
-                <!-- Plots grid -->
-                <div class="function-plots-grid">
-                  <div class="plot-card">
-                    <div class="plot-header">
-                      <span class="plot-name">Sigmoid</span>
-                      <span class="plot-formula">1 / (1 + e<sup>-z</sup>)</span>
-                    </div>
-                    <div class="plot-canvas-box">
-                      <svg width="140" height="75" viewBox="0 0 140 75" style="overflow: visible;">
-                        <!-- Axes -->
-                        <line x1="10" y1="65" x2="135" y2="65" stroke="#cbd5e1" stroke-width="1.5"/>
-                        <line x1="70" y1="10" x2="70" y2="70" stroke="#cbd5e1" stroke-width="1.5"/>
-                        <text x="65" y="72" font-size="9" fill="#94a3b8" text-anchor="end">0</text>
-                        <text x="135" y="72" font-size="9" fill="#94a3b8">x</text>
-                        <!-- Sigmoid Curve -->
-                        <path d="M 15 62 C 45 62, 55 40, 70 37.5 C 85 35, 95 15, 125 15" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
-                      </svg>
-                    </div>
-                  </div>
-
-                  <div class="plot-card">
-                    <div class="plot-header">
-                      <span class="plot-name">ReLU</span>
-                      <span class="plot-formula">max(0, x)</span>
-                    </div>
-                    <div class="plot-canvas-box">
-                      <svg width="140" height="75" viewBox="0 0 140 75" style="overflow: visible;">
-                        <!-- Axes -->
-                        <line x1="10" y1="65" x2="135" y2="65" stroke="#cbd5e1" stroke-width="1.5"/>
-                        <line x1="60" y1="10" x2="60" y2="70" stroke="#cbd5e1" stroke-width="1.5"/>
-                        <text x="55" y="72" font-size="9" fill="#94a3b8" text-anchor="end">0</text>
-                        <text x="135" y="72" font-size="9" fill="#94a3b8">x</text>
-                        <!-- ReLU Curve -->
-                        <path d="M 15 65 L 60 65 L 120 15" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="slide-bottom-row">
-                  <span>CS229 • Module 2</span>
-                  <div class="slide-nav-arrows">
-                    <button class="slide-arrow-btn" id="btn-prev-slide">‹</button>
-                    <span id="slide-pagination-text">2 of 6</span>
-                    <button class="slide-arrow-btn" id="btn-next-slide">›</button>
-                  </div>
-                </div>
+            <!-- Checklist -->
+            <div class="progress-checklist">
+              <div class="checklist-item">
+                <span class="check-icon-done">✓</span>
+                <span>Watch Module 1</span>
               </div>
+              <div class="checklist-item">
+                <span class="check-icon-done">✓</span>
+                <span>Review lecture notes</span>
+              </div>
+              <div class="checklist-item">
+                <span class="check-icon-empty"></span>
+                <span>Continue Module 2</span>
+              </div>
+              <div class="checklist-item">
+                <span class="check-icon-empty"></span>
+                <span>Complete practice quiz</span>
+              </div>
+            </div>
+          </div>
 
-              <!-- Right: Connected Reading -->
-              <div class="slide-right-col">
-                <span class="connected-reading-tag">CONNECTED READING</span>
-                <div class="reading-doc-icon-box">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="16" y1="13" x2="8" y2="13"></line>
-                    <line x1="16" y1="17" x2="8" y2="17"></line>
-                    <polyline points="10 9 9 9 8 9"></polyline>
+          <div class="progress-streak-banner">
+            <span class="streak-flame-icon">⚡</span>
+            <div>
+              <div class="streak-text-bold">3 days of showing up</div>
+              <div class="streak-text-sub">Small steps. Real understanding.</div>
+            </div>
+          </div>
+
+          <div class="progress-footer-stats">
+            2h 48m learned / 4h weekly goal
+          </div>
+        </div>
+
+        <!-- COLUMN 2: UPCOMING TASKS -->
+        <div class="dashboard-panel-card">
+          <div class="panel-card-header">
+            <div class="panel-card-title-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <span>Upcoming Tasks</span>
+            </div>
+            <a href="#prototype" class="panel-header-link" id="link-view-all-tasks">View all →</a>
+          </div>
+
+          <div class="tasks-list-container">
+            <!-- Task 1: Continue Module 2 (clickable to open prototype) -->
+            <div class="task-item-row" id="task-continue-module2" title="Resume Module 2: Perceptrons">
+              <div class="task-item-left">
+                <div class="task-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
                   </svg>
                 </div>
-                <div class="reading-chapter-label" id="reading-chap-label">Chapter 2</div>
-                <h4 class="reading-section-title" id="reading-sec-title">The Non-Linearity Requirement</h4>
-                <p class="reading-synopsis" id="reading-synopsis">
-                  Why stacked linear layers still behave like a single linear transformation without non-linear activations.
-                </p>
-                <div class="within-horizon-pill" id="reading-horizon-pill">
-                  <span>✓</span> Within your horizon
+                <div class="task-meta-col">
+                  <span class="task-due-tag">TODAY</span>
+                  <span class="task-title">Continue Module 2</span>
+                  <span class="task-subtitle">Perceptrons • resume at 18:42</span>
                 </div>
-                <a href="#tab-pdf" class="open-reading-link" id="link-open-pdf">
-                  Open reading notes ↗
-                </a>
               </div>
+              <span class="task-chevron">›</span>
+            </div>
+
+            <!-- Task 2: Review loss surfaces -->
+            <div class="task-item-row" id="task-review-loss">
+              <div class="task-item-left">
+                <div class="task-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                </div>
+                <div class="task-meta-col">
+                  <span class="task-due-tag">TODAY</span>
+                  <span class="task-title">Review loss surfaces</span>
+                  <span class="task-subtitle">Lecture notes • 2 resources</span>
+                </div>
+              </div>
+              <span class="task-chevron">›</span>
+            </div>
+
+            <!-- Task 3: Check your understanding -->
+            <div class="task-item-row" id="task-check-quiz">
+              <div class="task-item-left">
+                <div class="task-icon-box">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                </div>
+                <div class="task-meta-col">
+                  <span class="task-due-tag">TOMORROW</span>
+                  <span class="task-title">Check your understanding</span>
+                  <span class="task-subtitle">Module 2 quiz • 8 questions</span>
+                </div>
+              </div>
+              <span class="task-chevron">›</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMN 3: LATEST UPDATES -->
+        <div class="dashboard-panel-card">
+          <div class="panel-card-header">
+            <div class="panel-card-title-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 11a9 9 0 0 1 9 9"></path>
+                <path d="M4 4a16 16 0 0 1 16 16"></path>
+                <circle cx="5" cy="19" r="1"></circle>
+              </svg>
+              <span>Latest Updates</span>
             </div>
           </div>
 
-          <!-- TAB 2: READING NOTES (PDF) -->
-          <div class="tab-pane" id="tab-pdf">
-            <div class="pdf-full-box">
-              <span class="pdf-chapter-chip" id="pdf-chapter-chip">Chapter 2 • Stanford Deep Learning Textbook</span>
-              <h3 id="pdf-title" style="margin-bottom: 8px; color: var(--text-primary); font-size: 16px;">The Non-Linearity Requirement</h3>
-              <div id="pdf-body-text">
-                <p class="pdf-body-p">
-                  Consider a multi-layer feedforward network where each layer computes \( h_1 = W_1 x + b_1 \) and \( h_2 = W_2 h_1 + b_2 \). Composing these gives:
-                  \( h_2 = W_2 (W_1 x + b_1) + b_2 = (W_2 W_1) x + (W_2 b_1 + b_2) \).
-                </p>
-                <p class="pdf-body-p">
-                  Since the product of two matrices \( W_2 W_1 \) is simply another matrix \( W' \), a multi-layer linear network has no more representational capacity than a single-layer perceptron. It cannot compute non-linear decision boundaries or solve problems such as XOR.
-                </p>
-                <p class="pdf-body-p">
-                  By inserting a fixed, non-linear activation function \( \sigma(\cdot) \) between layers, \( h = \sigma(W x + b) \), the network gains the ability to deform coordinate space and approximate arbitrary continuous functions (Universal Approximation Theorem).
-                </p>
+          <div class="updates-list-container">
+            <div class="update-item-row">
+              <div class="update-icon-box icon-blue">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="update-content-col">
+                <span class="update-title">Your resources are ready</span>
+                <span class="update-desc">Module 2 slides and notes are in your library.</span>
+                <span class="update-time">12 min ago</span>
+              </div>
+            </div>
+
+            <div class="update-item-row">
+              <div class="update-icon-box icon-purple">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="update-content-col">
+                <span class="update-title">A new discussion to explore</span>
+                <span class="update-desc">How do you build intuition for gradient descent?</span>
+                <span class="update-time">1 hour ago</span>
+              </div>
+            </div>
+
+            <div class="update-item-row">
+              <div class="update-icon-box icon-blue">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+              <div class="update-content-col">
+                <span class="update-title">Pick up where you paused</span>
+                <span class="update-desc">Your last question and citations are saved.</span>
+                <span class="update-time">Yesterday</span>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+    </main>
 
-          <!-- TAB 3: SPOKEN TRANSCRIPT -->
-          <div class="tab-pane" id="tab-transcript">
-            <div class="transcript-scroll-box">
-              <div class="transcript-list" id="transcript-list">
-                <!-- Chunks injected dynamically -->
-              </div>
-            </div>
-          </div>
+    <!-- Lumivra Footer -->
+    <footer class="lumivra-footer">
+      <span>Made for your moment of understanding.</span>
+      <span>Your learning, at your pace.</span>
+    </footer>
+  </div>
 
-          <!-- TAB 4: 2-MINUTE CONTEXT CARD -->
-          <div class="tab-pane" id="tab-card">
-            <div class="context-card-pane" id="context-card-content">
-              <h4 style="font-size: 15px; margin-bottom: 6px; color: var(--text-primary);">⚡ 2-Minute Recap at 02:30</h4>
-              <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
-                You are currently in <strong>Module 2: Activation Functions</strong>.
-              </p>
-              <ul style="font-size: 12.5px; color: var(--text-secondary); padding-left: 20px; line-height: 1.6;">
-                <li>The pre-activation sum is \( z = \sum w_i x_i + b \).</li>
-                <li>Pure linear combinations collapse into a single matrix multiplication regardless of layer depth.</li>
-                <li>Activation functions (Sigmoid, ReLU) break linearity and unlock representational capacity for non-linear boundaries (XOR).</li>
-              </ul>
-            </div>
-          </div>
+
+  <!-- ======================================================== -->
+  <!-- VIEW 2: TEMPORAL RAG PROTOTYPE (CANVAS LEARNING WORKSPACE)-->
+  <!-- ======================================================== -->
+  <div id="prototype-workspace-view" class="prototype-page hidden">
+    <!-- Top Navbar -->
+    <nav class="top-nav">
+      <div class="nav-brand">
+        <!-- Return to Lumivra Dashboard Button -->
+        <button class="nav-pill-btn btn-back-dashboard" id="btn-back-to-dashboard" title="Return to Lumivra Dashboard">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Lumivra Home</span>
+        </button>
+
+        <div class="brand-logo-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+        </div>
+        <span class="brand-title">Temporal RAG</span>
+        <span class="brand-separator">|</span>
+        <span class="brand-subtitle">A Canvas learning companion</span>
+      </div>
+
+      <div class="nav-actions">
+        <button class="nav-pill-btn" id="btn-open-architecture" title="View Technical Architecture & Data Flow">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Architecture</span>
+        </button>
+
+        <a href="api-docs.html" class="nav-pill-btn" title="Interactive API Tester">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
+          </svg>
+          <span>API Docs</span>
+        </a>
+
+        <button class="nav-circle-btn" id="btn-help-modal" title="Help & System Info">?</button>
+        <div class="user-avatar-pill" title="Student Profile">AS</div>
+      </div>
+    </nav>
+
+    <!-- Course Breadcrumbs & Title Bar -->
+    <div class="course-header-bar">
+      <div class="course-breadcrumbs">
+        <span class="breadcrumb-link breadcrumb-clickable" id="breadcrumb-lumivra-home">Lumivra</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link">My courses</span>
+        <span class="breadcrumb-sep">›</span>
+        <span id="course-title" class="breadcrumb-link">CS229: Foundations of Deep Learning</span>
+      </div>
+      <div class="course-title-row">
+        <h1 class="course-module-title" id="course-module">Module 2: Perceptrons, Loss Surfaces & Backpropagation</h1>
+        <div class="horizon-status-badge" id="guardrail-status-pill">
+          <span>🛡️</span>
+          <span id="status-text">Horizon Masking: Active</span>
         </div>
       </div>
-    </section>
+    </div>
 
-    <!-- RIGHT COLUMN: AI LECTURE CO-PILOT -->
-    <aside class="right-copilot-column">
-      <div class="copilot-card">
-        <!-- Card Header -->
-        <div class="copilot-card-header">
-          <div class="copilot-brand">
-            <div class="copilot-avatar-box">✨</div>
-            <div>
-              <div class="copilot-meta-title">AI Lecture Co-Pilot</div>
-              <div class="copilot-meta-sub">AWS Bedrock • Claude & Titan RAG</div>
+    <!-- Sub-Toolbar / Workspace Tabs & Retrieval Toggle -->
+    <div class="workspace-toolbar">
+      <div class="workspace-tabs">
+        <button class="workspace-tab active" data-wstab="workspace">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Lecture workspace
+        </button>
+        <button class="workspace-tab" data-wstab="notes">
+          My notes
+        </button>
+      </div>
+
+      <div class="retrieval-mode-control">
+        <span class="retrieval-label">RETRIEVAL MODE</span>
+        <div class="segmented-control" id="rag-mode-toggle">
+          <button class="seg-btn active" id="btn-mode-temporal" data-mode="temporal" title="Horizon Masking: 0% Future Leakage">
+            Temporal RAG
+          </button>
+          <button class="seg-btn" id="btn-mode-naive" data-mode="naive" title="Unmasked: Retrieves Future Topics Early">
+            Naive RAG
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Two-Column Grid -->
+    <main class="main-content-layout">
+      <!-- Left Column: Video + Horizon + Middleware -->
+      <section class="left-workspace-column">
+        <!-- 1. Video Player Card -->
+        <div class="video-card-container">
+          <div class="video-screen-wrapper">
+            <canvas id="lecture-canvas" width="800" height="450"></canvas>
+            
+            <!-- Pause Overlay -->
+            <div class="pause-ask-overlay hidden" id="pause-ask-prompt">
+              <div class="overlay-content-left">
+                <span class="overlay-pause-badge">⏸️</span>
+                <div class="overlay-text-block">
+                  <strong>Paused at <span id="overlay-pause-time">02:30</span></strong>
+                  <p>Have a doubt right here? Ask your AI Co-Pilot without losing context.</p>
+                </div>
+              </div>
+              <button class="btn-overlay-ask" id="btn-focus-doubt">Ask Question at <span id="btn-time-label">02:30</span></button>
             </div>
           </div>
-          <button class="copilot-options-btn" id="btn-clear-chat" title="Clear chat history">•••</button>
+
+          <!-- Video Scrubber Bar -->
+          <div class="video-scrub-bar" id="scrubber-bar" title="Click to seek anywhere in the lecture">
+            <div class="video-scrub-progress" id="scrubber-progress">
+              <div class="video-scrub-handle" id="scrubber-handle"></div>
+            </div>
+          </div>
+
+          <!-- Video Controls Bar -->
+          <div class="video-controls-row">
+            <div class="ctrl-group-left">
+              <button class="ctrl-btn" id="btn-play-pause" title="Play / Pause">
+                <svg id="icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                <svg id="icon-pause" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="6" y="4" width="4" height="16"></rect>
+                  <rect x="14" y="4" width="4" height="16"></rect>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="btn-rewind" title="Rewind 10s">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="btn-forward" title="Forward 10s">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M13 17l5-5-5-5M6 17l5-5-5-5"/>
+                </svg>
+              </button>
+
+              <button class="ctrl-btn" id="btn-mute-toggle" title="Volume">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              </button>
+
+              <span class="video-time-counter">
+                <span id="current-time-display">02:30</span> / <span id="total-time-display">15:00</span>
+              </span>
+            </div>
+
+            <div class="ctrl-group-right">
+              <button class="btn-speed-pill" id="btn-speed-cycle" title="Playback Speed">1x</button>
+              <button class="ctrl-btn" title="Subtitles (CC)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect>
+                  <path d="M7 15h3M7 11h3M14 15h3M14 11h3"></path>
+                </svg>
+              </button>
+              <button class="ctrl-btn" title="Playback Settings">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="4" y1="21" x2="4" y2="14"></line>
+                  <line x1="4" y1="10" x2="4" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12" y2="3"></line>
+                  <line x1="20" y1="21" x2="20" y2="16"></line>
+                  <line x1="20" y1="12" x2="20" y2="3"></line>
+                  <line x1="1" y1="14" x2="7" y2="14"></line>
+                  <line x1="9" y1="8" x2="15" y2="8"></line>
+                  <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+              </button>
+              <button class="ctrl-btn" title="Fullscreen" id="btn-fullscreen">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
         </div>
 
-        <!-- Guardrail Banner -->
-        <div class="copilot-guardrail-banner" id="chat-guardrail-banner">
-          <div class="guardrail-icon-wrap">🛡️</div>
-          <div>
-            <div class="guardrail-banner-title">In step with you. Never ahead.</div>
-            <div class="guardrail-banner-desc">
-              Answers use only material taught up to <span id="banner-pause-time">02:30</span>. Future topics get a timestamp hint, not a spoiler.
+        <!-- 2. Your Knowledge Horizon Card -->
+        <div class="horizon-card">
+          <div class="horizon-header-row">
+            <div class="horizon-title-group">
+              <svg class="horizon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="6" x2="12" y2="12"></line>
+                <line x1="12" y1="12" x2="16" y2="14"></line>
+              </svg>
+              <span>Your knowledge horizon</span>
+            </div>
+            <span class="horizon-pill-demo" id="horizon-demo-tag">0.0% future leakage • Demo</span>
+          </div>
+
+          <div class="horizon-markers-row">
+            <span>00:00</span>
+            <span class="horizon-here-marker" id="horizon-here-label">02:30 • YOU ARE HERE</span>
+            <span>15:00</span>
+          </div>
+
+          <!-- 14 Discrete Chunk Blocks -->
+          <div class="horizon-chunks-grid" id="horizon-bar-chunks"></div>
+
+          <div class="horizon-footer-row">
+            <div class="horizon-legend-left">
+              <span class="legend-accessible-tag">
+                <span class="legend-dot-purple"></span>
+                <span id="stat-accessible-count">5</span> accessible past chunks
+              </span>
+              <span class="legend-blocked-tag">
+                <span>🔒</span>
+                <span id="stat-blocked-count">9</span> blocked future chunks
+              </span>
+            </div>
+            <div class="horizon-footer-right" id="horizon-footer-note">
+              Future context excluded before search
             </div>
           </div>
         </div>
 
-        <!-- Messages Area -->
-        <div class="copilot-messages-container" id="chat-messages-container">
-          <!-- Centered pause marker -->
-          <div class="lecture-pause-divider">
-            <span>LECTURE PAUSED • <span id="divider-time-label">02:30</span></span>
+        <!-- 3. Multi-Source Middleware Viewer -->
+        <div class="middleware-card">
+          <div class="middleware-tabs-bar">
+            <button class="mw-tab-btn active" data-tab="tab-slide">
+              <span>📊</span> Synced PPT Slide
+            </button>
+            <button class="mw-tab-btn" data-tab="tab-pdf">
+              <span>📄</span> Reading Notes (PDF)
+            </button>
+            <button class="mw-tab-btn" data-tab="tab-transcript">
+              <span>🎙️</span> Spoken Transcript
+            </button>
+            <button class="mw-tab-btn" data-tab="tab-card">
+              <span>⚡</span> 2-Minute Context Card
+            </button>
           </div>
 
-          <!-- Welcome message matching screenshot exactly -->
-          <div class="copilot-message-block">
-            <div class="msg-header-line">
-              <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
-              <span class="msg-timestamp">Just now</span>
-            </div>
-            <div class="msg-content-text">
-              <p>
-                Let's make this lecture click. I'm following along at <strong id="welcome-pause-time">02:30</strong>, where you're exploring non-linear activation functions.
-              </p>
-              <p>
-                Ask me to unpack an idea, connect it to your reading, or revisit a point. Every answer is grounded in what you've covered, with clickable citations back to the source.
-              </p>
-              <div class="msg-key-idea-card">
-                <strong>The key idea so far:</strong> stacking linear layers still gives a linear transformation. A non-linear activation is what changes the network's expressive power.
-                <div>
-                  <a class="msg-citation-link" onclick="seekToSeconds(105)">
-                    ▷ 01:45 • Slide 2 ↗
+          <div class="mw-content-container">
+            <!-- TAB 1: SYNCHRONIZED PPT SLIDE (2-COLUMN VIEW) -->
+            <div class="tab-pane active" id="tab-slide">
+              <div class="slide-two-column-view">
+                <!-- Left: Slide content + Function plots -->
+                <div class="slide-left-col">
+                  <div class="slide-top-meta">
+                    <span class="slide-num-label" id="slide-num-label">SLIDE 2 / 6</span>
+                    <span class="slide-sync-pill" id="slide-sync-pill">🔗 Synced to video • 02:30</span>
+                  </div>
+                  <h3 class="slide-main-title" id="slide-main-title">Non-Linear Activation Functions</h3>
+                  <p class="slide-sub-desc" id="slide-sub-desc">Non-linearity allows a network to learn beyond linear boundaries.</p>
+
+                  <!-- Plots Grid -->
+                  <div class="function-plots-grid">
+                    <div class="plot-card">
+                      <div class="plot-header">
+                        <span class="plot-name">Sigmoid</span>
+                        <span class="plot-formula">1 / (1 + e<sup>-z</sup>)</span>
+                      </div>
+                      <div class="plot-canvas-box">
+                        <svg width="140" height="75" viewBox="0 0 140 75" style="overflow: visible;">
+                          <line x1="10" y1="65" x2="135" y2="65" stroke="#cbd5e1" stroke-width="1.5"/>
+                          <line x1="70" y1="10" x2="70" y2="70" stroke="#cbd5e1" stroke-width="1.5"/>
+                          <text x="65" y="72" font-size="9" fill="#94a3b8" text-anchor="end">0</text>
+                          <text x="135" y="72" font-size="9" fill="#94a3b8">x</text>
+                          <path d="M 15 62 C 45 62, 55 40, 70 37.5 C 85 35, 95 15, 125 15" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="plot-card">
+                      <div class="plot-header">
+                        <span class="plot-name">ReLU</span>
+                        <span class="plot-formula">max(0, x)</span>
+                      </div>
+                      <div class="plot-canvas-box">
+                        <svg width="140" height="75" viewBox="0 0 140 75" style="overflow: visible;">
+                          <line x1="10" y1="65" x2="135" y2="65" stroke="#cbd5e1" stroke-width="1.5"/>
+                          <line x1="60" y1="10" x2="60" y2="70" stroke="#cbd5e1" stroke-width="1.5"/>
+                          <text x="55" y="72" font-size="9" fill="#94a3b8" text-anchor="end">0</text>
+                          <text x="135" y="72" font-size="9" fill="#94a3b8">x</text>
+                          <path d="M 15 65 L 60 65 L 120 15" fill="none" stroke="#4f46e5" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="slide-bottom-row">
+                    <span>CS229 • Module 2</span>
+                    <div class="slide-nav-arrows">
+                      <button class="slide-arrow-btn" id="btn-prev-slide">‹</button>
+                      <span id="slide-pagination-text">2 of 6</span>
+                      <button class="slide-arrow-btn" id="btn-next-slide">›</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: Connected Reading -->
+                <div class="slide-right-col">
+                  <span class="connected-reading-tag">CONNECTED READING</span>
+                  <div class="reading-doc-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                  </div>
+                  <div class="reading-chapter-label" id="reading-chap-label">Chapter 2</div>
+                  <h4 class="reading-section-title" id="reading-sec-title">The Non-Linearity Requirement</h4>
+                  <p class="reading-synopsis" id="reading-synopsis">
+                    Why stacked linear layers still behave like a single linear transformation without non-linear activations.
+                  </p>
+                  <div class="within-horizon-pill" id="reading-horizon-pill">
+                    <span>✓</span> Within your horizon
+                  </div>
+                  <a href="#tab-pdf" class="open-reading-link" id="link-open-pdf">
+                    Open reading notes ↗
                   </a>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <!-- "A place to start" 2x2 Grid -->
-        <div class="quick-start-section">
-          <div class="quick-start-title">A place to start</div>
-          <div class="quick-prompts-grid" id="prompt-chips">
-            <button class="quick-prompt-btn" data-q="What did the professor just explain about activations?">
-              💬 Current Topic (02:30)
-            </button>
-            <button class="quick-prompt-btn spoiler-btn" data-q="How does backpropagation work in deep networks?">
-              🔒 Backpropagation • future test
-            </button>
-            <button class="quick-prompt-btn" data-q="Why can't a single perceptron solve the XOR problem?">
-              💬 XOR Limitation
-            </button>
-            <button class="quick-prompt-btn" data-q="What is the learning rate alpha used for?">
-              💬 Learning Rate Alpha
-            </button>
-          </div>
-        </div>
-
-        <!-- Search Boundary Comparison Box -->
-        <div class="boundary-comparison-card">
-          <div class="boundary-title">Same lecture. A safer search boundary.</div>
-          <div class="boundary-columns">
-            <div class="boundary-col-item">
-              <span class="boundary-mode-name active-rag" id="rag-label-temporal">Temporal RAG - selected</span>
-              <span class="boundary-mode-sub" id="rag-sub-temporal">Filters future chunks BEFORE vector search.</span>
+            <!-- TAB 2: READING NOTES (PDF) -->
+            <div class="tab-pane" id="tab-pdf">
+              <div class="pdf-full-box">
+                <span class="pdf-chapter-chip" id="pdf-chapter-chip">Chapter 2 • Stanford Deep Learning Textbook</span>
+                <h3 id="pdf-title" style="margin-bottom: 8px; color: var(--text-primary); font-size: 16px;">The Non-Linearity Requirement</h3>
+                <div id="pdf-body-text">
+                  <p class="pdf-body-p">
+                    Consider a multi-layer feedforward network where each layer computes \( h_1 = W_1 x + b_1 \) and \( h_2 = W_2 h_1 + b_2 \). Composing these gives:
+                    \( h_2 = W_2 (W_1 x + b_1) + b_2 = (W_2 W_1) x + (W_2 b_1 + b_2) \).
+                  </p>
+                  <p class="pdf-body-p">
+                    Since the product of two matrices \( W_2 W_1 \) is simply another matrix \( W' \), a multi-layer linear network has no more representational capacity than a single-layer perceptron. It cannot compute non-linear decision boundaries or solve problems such as XOR.
+                  </p>
+                  <p class="pdf-body-p">
+                    By inserting a fixed, non-linear activation function \( \sigma(\cdot) \) between layers, \( h = \sigma(W x + b) \), the network gains the ability to deform coordinate space and approximate arbitrary continuous functions (Universal Approximation Theorem).
+                  </p>
+                </div>
+              </div>
             </div>
-            <div class="boundary-col-item">
-              <span class="boundary-mode-name inactive-rag" id="rag-label-naive">Naive RAG</span>
-              <span class="boundary-mode-sub" id="rag-sub-naive">Searches the full lecture, including future material.</span>
+
+            <!-- TAB 3: SPOKEN TRANSCRIPT -->
+            <div class="tab-pane" id="tab-transcript">
+              <div class="transcript-scroll-box">
+                <div class="transcript-list" id="transcript-list"></div>
+              </div>
             </div>
-          </div>
-        </div>
 
-        <!-- Synced status dot -->
-        <div class="copilot-sync-status">
-          <span class="status-dot-green"></span>
-          <span>Search ready • transcript, slides & PDF synced</span>
-        </div>
-
-        <!-- Chat Input Form -->
-        <form id="chat-form">
-          <div class="copilot-input-wrapper">
-            <input 
-              type="text" 
-              id="chat-query-input" 
-              class="chat-text-input" 
-              placeholder="Ask about what you've learned so far..." 
-              autocomplete="off"
-              required
-            />
-            <div class="input-bottom-actions">
-              <span class="context-tag-pill" id="input-timestamp-tag">
-                ⏱️ Context: <span id="tag-time-label">02:30</span>
-              </span>
-              <div class="input-btns-right">
-                <button type="button" class="input-action-btn btn-plus" title="Add reference or code">+</button>
-                <button type="submit" id="btn-send-doubt" class="input-action-btn" title="Send Question">
-                  ↑
-                </button>
+            <!-- TAB 4: 2-MINUTE CONTEXT CARD -->
+            <div class="tab-pane" id="tab-card">
+              <div class="context-card-pane" id="context-card-content">
+                <h4 style="font-size: 15px; margin-bottom: 6px; color: var(--text-primary);">⚡ 2-Minute Recap at 02:30</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 10px;">
+                  You are currently in <strong>Module 2: Activation Functions</strong>.
+                </p>
+                <ul style="font-size: 12.5px; color: var(--text-secondary); padding-left: 20px; line-height: 1.6;">
+                  <li>The pre-activation sum is \( z = \sum w_i x_i + b \).</li>
+                  <li>Pure linear combinations collapse into a single matrix multiplication regardless of layer depth.</li>
+                  <li>Activation functions (Sigmoid, ReLU) break linearity and unlock representational capacity for non-linear boundaries (XOR).</li>
+                </ul>
               </div>
             </div>
           </div>
-        </form>
-
-        <div class="copilot-footer-note">
-          Horizon-aware cache enabled • Illustrative demo state
         </div>
-      </div>
-    </aside>
-  </main>
+      </section>
 
-  <!-- Technical Architecture & Innovation Modal -->
-  <div class="modal-overlay hidden" id="arch-modal">
-    <div class="modal-dialog">
-      <div class="modal-header">
-        <h2>Technical Architecture & Temporal RAG Innovation</h2>
-        <button class="btn-close-modal" id="btn-close-modal">✕</button>
-      </div>
-      <div class="modal-body">
-        <div class="arch-section">
-          <h3>1. The Fatal AI Gap & Innovation</h3>
-          <p>
-            Standard AI chatbots in e-learning platforms search the entire course transcript indiscriminately. When a student pauses early in a lecture and asks a question, standard RAG retrieves future explanations, leaking future concepts, equations, and solutions.
-          </p>
-          <div class="math-card">
-            <strong>The Mathematical Masking Rule:</strong><br>
-            <code>Search Space = { Chunk_i | StartTime(Chunk_i) ≤ CurrentPauseTime }</code><br>
-            <code>Masked Space = { Chunk_j | StartTime(Chunk_j) > CurrentPauseTime } (Filtered BEFORE Vector Search)</code>
+      <!-- Right Column: AI Live Co-Pilot -->
+      <aside class="right-copilot-column">
+        <div class="copilot-card">
+          <!-- Card Header -->
+          <div class="copilot-card-header">
+            <div class="copilot-brand">
+              <div class="copilot-avatar-box">✨</div>
+              <div>
+                <div class="copilot-meta-title">AI Lecture Co-Pilot</div>
+                <div class="copilot-meta-sub">AWS Bedrock • Claude & Titan RAG</div>
+              </div>
+            </div>
+            <button class="copilot-options-btn" id="btn-clear-chat" title="Clear chat history">•••</button>
+          </div>
+
+          <!-- Guardrail Banner -->
+          <div class="copilot-guardrail-banner" id="chat-guardrail-banner">
+            <div class="guardrail-icon-wrap">🛡️</div>
+            <div>
+              <div class="guardrail-banner-title">In step with you. Never ahead.</div>
+              <div class="guardrail-banner-desc">
+                Answers use only material taught up to <span id="banner-pause-time">02:30</span>. Future topics get a timestamp hint, not a spoiler.
+              </div>
+            </div>
+          </div>
+
+          <!-- Messages Area -->
+          <div class="copilot-messages-container" id="chat-messages-container">
+            <!-- Centered pause marker -->
+            <div class="lecture-pause-divider">
+              <span>LECTURE PAUSED • <span id="divider-time-label">02:30</span></span>
+            </div>
+
+            <!-- Welcome Message -->
+            <div class="copilot-message-block">
+              <div class="msg-header-line">
+                <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
+                <span class="msg-timestamp">Just now</span>
+              </div>
+              <div class="msg-content-text">
+                <p>
+                  Let's make this lecture click. I'm following along at <strong id="welcome-pause-time">02:30</strong>, where you're exploring non-linear activation functions.
+                </p>
+                <p>
+                  Ask me to unpack an idea, connect it to your reading, or revisit a point. Every answer is grounded in what you've covered, with clickable citations back to the source.
+                </p>
+                <div class="msg-key-idea-card">
+                  <strong>The key idea so far:</strong> stacking linear layers still gives a linear transformation. A non-linear activation is what changes the network's expressive power.
+                  <div>
+                    <a class="msg-citation-link" onclick="seekToSeconds(105)">
+                      ▷ 01:45 • Slide 2 ↗
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- "A place to start" 2x2 Grid -->
+          <div class="quick-start-section">
+            <div class="quick-start-title">A place to start</div>
+            <div class="quick-prompts-grid" id="prompt-chips">
+              <button class="quick-prompt-btn" data-q="What did the professor just explain about activations?">
+                💬 Current Topic (02:30)
+              </button>
+              <button class="quick-prompt-btn spoiler-btn" data-q="How does backpropagation work in deep networks?">
+                🔒 Backpropagation • future test
+              </button>
+              <button class="quick-prompt-btn" data-q="Why can't a single perceptron solve the XOR problem?">
+                💬 XOR Limitation
+              </button>
+              <button class="quick-prompt-btn" data-q="What is the learning rate alpha used for?">
+                💬 Learning Rate Alpha
+              </button>
+            </div>
+          </div>
+
+          <!-- Search Boundary Comparison Box -->
+          <div class="boundary-comparison-card">
+            <div class="boundary-title">Same lecture. A safer search boundary.</div>
+            <div class="boundary-columns">
+              <div class="boundary-col-item">
+                <span class="boundary-mode-name active-rag" id="rag-label-temporal">Temporal RAG - selected</span>
+                <span class="boundary-mode-sub" id="rag-sub-temporal">Filters future chunks BEFORE vector search.</span>
+              </div>
+              <div class="boundary-col-item">
+                <span class="boundary-mode-name inactive-rag" id="rag-label-naive">Naive RAG</span>
+                <span class="boundary-mode-sub" id="rag-sub-naive">Searches the full lecture, including future material.</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Synced Status Indicator -->
+          <div class="copilot-sync-status">
+            <span class="status-dot-green"></span>
+            <span>Search ready • transcript, slides & PDF synced</span>
+          </div>
+
+          <!-- Chat Input Form -->
+          <form id="chat-form">
+            <div class="copilot-input-wrapper">
+              <input 
+                type="text" 
+                id="chat-query-input" 
+                class="chat-text-input" 
+                placeholder="Ask about what you've learned so far..." 
+                autocomplete="off"
+                required
+              />
+              <div class="input-bottom-actions">
+                <span class="context-tag-pill" id="input-timestamp-tag">
+                  ⏱️ Context: <span id="tag-time-label">02:30</span>
+                </span>
+                <div class="input-btns-right">
+                  <button type="button" class="input-action-btn btn-plus" title="Add reference or code">+</button>
+                  <button type="submit" id="btn-send-doubt" class="input-action-btn" title="Send Question">
+                    ↑
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="copilot-footer-note">
+            Horizon-aware cache enabled • Illustrative demo state
           </div>
         </div>
+      </aside>
+    </main>
 
-        <div class="arch-section">
-          <h3>2. Multi-Resource Middleware</h3>
-          <p>
-            Our middleware unifies three asynchronous learning assets into one synchronized knowledge layer:
-          </p>
-          <ul style="padding-left: 20px; margin-top: 8px;">
-            <li><strong>AWS Transcribe:</strong> 30-second timestamped spoken transcripts.</li>
-            <li><strong>Presentation Slides:</strong> Structured bullet points & diagrams mapped to time intervals.</li>
-            <li><strong>Course PDF Notes:</strong> Textbook chapters aligned with lecture milestones.</li>
-          </ul>
+    <!-- Architecture & Innovation Modal -->
+    <div class="modal-overlay hidden" id="arch-modal">
+      <div class="modal-dialog">
+        <div class="modal-header">
+          <h2>Technical Architecture & Temporal RAG Innovation</h2>
+          <button class="btn-close-modal" id="btn-close-modal">✕</button>
         </div>
+        <div class="modal-body">
+          <div class="arch-section">
+            <h3>1. The Fatal AI Gap & Innovation</h3>
+            <p>
+              Standard AI chatbots in e-learning platforms search the entire course transcript indiscriminately. When a student pauses early in a lecture and asks a question, standard RAG retrieves future explanations, leaking future concepts, equations, and solutions.
+            </p>
+            <div class="math-card">
+              <strong>The Mathematical Masking Rule:</strong><br>
+              <code>Search Space = { Chunk_i | StartTime(Chunk_i) ≤ CurrentPauseTime }</code><br>
+              <code>Masked Space = { Chunk_j | StartTime(Chunk_j) > CurrentPauseTime } (Filtered BEFORE Vector Search)</code>
+            </div>
+          </div>
 
-        <div class="arch-section">
-          <h3>3. Helpful Future Hints ("The Teaser Guardrail")</h3>
-          <p>
-            If a student asks about a concept taught in a future lesson (e.g. <em>"How does backpropagation work?"</em> while paused at 02:30), the Future Horizon Scanner detects the concept in future chunks and prompts:
-          </p>
-          <blockquote style="border-left: 3px solid #4f46e5; padding-left: 10px; margin: 8px 0; color: #4338ca;">
-            💡 "The teacher explains this completely at <strong>[12:30]</strong>! Keep watching to understand how today's foundation leads straight into it."
-          </blockquote>
-        </div>
+          <div class="arch-section">
+            <h3>2. Multi-Resource Middleware</h3>
+            <p>
+              Our middleware unifies three asynchronous learning assets into one synchronized knowledge layer:
+            </p>
+            <ul style="padding-left: 20px; margin-top: 8px;">
+              <li><strong>AWS Transcribe:</strong> 30-second timestamped spoken transcripts.</li>
+              <li><strong>Presentation Slides:</strong> Structured bullet points & diagrams mapped to time intervals.</li>
+              <li><strong>Course PDF Notes:</strong> Textbook chapters aligned with lecture milestones.</li>
+            </ul>
+          </div>
 
-        <div class="arch-section">
-          <h3>4. Fast-Memory Caching</h3>
-          <p>
-            Repeated student questions at identical lecture intervals are served directly from an in-memory LRU cache with <strong>0.1ms latency and $0.00 compute cost</strong>.
-          </p>
+          <div class="arch-section">
+            <h3>3. Helpful Future Hints ("The Teaser Guardrail")</h3>
+            <p>
+              If a student asks about a concept taught in a future lesson (e.g. <em>"How does backpropagation work?"</em> while paused at 02:30), the Future Horizon Scanner detects the concept in future chunks and prompts:
+            </p>
+            <blockquote style="border-left: 3px solid #4f46e5; padding-left: 10px; margin: 8px 0; color: #4338ca;">
+              💡 "The teacher explains this completely at <strong>[12:30]</strong>! Keep watching to understand how today's foundation leads straight into it."
+            </blockquote>
+          </div>
+
+          <div class="arch-section">
+            <h3>4. Fast-Memory Caching</h3>
+            <p>
+              Repeated student questions at identical lecture intervals are served directly from an in-memory LRU cache with <strong>0.1ms latency and $0.00 compute cost</strong>.
+            </p>
+          </div>
         </div>
       </div>
     </div>
