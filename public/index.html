@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lumivra — AI Learning Assistant & Companion</title>
+  <title>Lumivra — Sign In & Learning Companion</title>
   <link rel="stylesheet" href="styles.css">
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,14 +13,261 @@
 <body>
 
   <!-- ======================================================== -->
-  <!-- VIEW 1: LUMIVRA DASHBOARD (MATCHING SCREENSHOT)          -->
+  <!-- VIEW 1: AUTH / SIGN-IN VIEW (MATCHING LATEST SCREENSHOT) -->
   <!-- ======================================================== -->
-  <div id="lumivra-dashboard-view" class="lumivra-page">
+  <div id="lumivra-auth-view" class="auth-page">
+    <!-- Top Nav -->
+    <header class="auth-nav">
+      <div class="auth-nav-left">
+        <div class="lumivra-logo-icon">
+          <!-- Stylized Book Logo -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="4" r="2" fill="currentColor"></circle>
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 7H20v13H6.5A2.5 2.5 0 0 1 4 17.5v-8A2.5 2.5 0 0 1 6.5 7z"></path>
+          </svg>
+        </div>
+        <span class="lumivra-brand-text">Lumivra</span>
+        <span class="brand-subtitle" style="font-size: 12px; margin-left: 8px;">A Canvas learning companion</span>
+      </div>
+
+      <button class="auth-nav-help-btn" id="btn-auth-help" title="Need help?">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+        <span>Need help?</span>
+      </button>
+    </header>
+
+    <!-- Main Auth Container -->
+    <main class="auth-main-wrapper">
+      <div class="auth-split-grid">
+        <!-- LEFT COLUMN: VALUE PROPOSITION & TEASER -->
+        <section class="auth-left-col">
+          <div class="auth-eyebrow">
+            <span>✨</span> YOUR AI LEARNING COMPANION
+          </div>
+          <h1 class="auth-hero-title">
+            Big ideas start<br>with your curiosity.
+          </h1>
+          <p class="auth-hero-desc">
+            Turn your first question into your next breakthrough.<br>
+            Explore, ask, and build confidence—at your own pace.
+          </p>
+
+          <!-- Interactive Live Teaser Mini-Card -->
+          <div class="auth-teaser-card" id="auth-teaser-card-trigger" title="Click to launch interactive prototype">
+            <div class="teaser-blackboard">
+              <div class="teaser-board-left">
+                <span class="teaser-course-code">CS229 / LECTURE 02</span>
+                <span class="teaser-topic-tag">02 / NON-LINEAR ACTIVATION</span>
+                <h3 class="teaser-heading">A neuron needs more<br>than a straight line.</h3>
+                <span class="teaser-formula">y = σ(Σ wi xi + b)</span>
+              </div>
+
+              <div class="teaser-board-right">
+                <span class="teaser-sync-pill">
+                  <span class="sync-dot"></span> IN SYNC WITH YOU
+                </span>
+                <!-- Mini Synaptic SVG Diagram -->
+                <svg class="teaser-diagram-svg" width="130" height="75" viewBox="0 0 130 75" fill="none">
+                  <!-- Inputs -->
+                  <circle cx="18" cy="18" r="8" stroke="#475569" stroke-width="1.5" fill="#0c1322"/>
+                  <text x="18" y="21" fill="#cbd5e1" font-size="8" text-anchor="middle">x₁</text>
+                  <circle cx="18" cy="38" r="8" stroke="#475569" stroke-width="1.5" fill="#0c1322"/>
+                  <text x="18" y="41" fill="#cbd5e1" font-size="8" text-anchor="middle">x₂</text>
+                  <circle cx="18" cy="58" r="8" stroke="#475569" stroke-width="1.5" fill="#0c1322"/>
+                  <text x="18" y="61" fill="#cbd5e1" font-size="8" text-anchor="middle">x₃</text>
+                  <!-- Synapses -->
+                  <line x1="26" y1="18" x2="68" y2="38" stroke="#475569" stroke-width="1.2"/>
+                  <line x1="26" y1="38" x2="68" y2="38" stroke="#475569" stroke-width="1.2"/>
+                  <line x1="26" y1="58" x2="68" y2="38" stroke="#475569" stroke-width="1.2"/>
+                  <!-- Center sigma node -->
+                  <circle cx="78" cy="38" r="16" fill="#1e1b4b" stroke="#818cf8" stroke-width="1.5"/>
+                  <text x="78" y="44" fill="#ffffff" font-size="16" font-weight="bold" text-anchor="middle">σ</text>
+                  <!-- Output -->
+                  <line x1="94" y1="38" x2="114" y2="38" stroke="#475569" stroke-width="1.2"/>
+                  <text x="122" y="42" fill="#cbd5e1" font-size="11" font-weight="bold">y</text>
+                  <text x="78" y="64" fill="#94a3b8" font-size="6.5" text-anchor="middle">activation function</text>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Mini Horizon Strip -->
+            <div class="teaser-horizon-strip">
+              <div class="teaser-horizon-top">
+                <span class="teaser-horizon-title">Your knowledge horizon</span>
+                <span class="teaser-here-tag">02:30 • YOU ARE HERE</span>
+              </div>
+              <div class="teaser-chunks-row">
+                <div class="t-chunk accessible"></div>
+                <div class="t-chunk accessible"></div>
+                <div class="t-chunk accessible"></div>
+                <div class="t-chunk accessible"></div>
+                <div class="t-chunk accessible"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+                <div class="t-chunk blocked"></div>
+              </div>
+              <span class="teaser-guardrail-tag">
+                <span>🛡️</span> Grounded in what you've learned. No spoilers ahead.
+              </span>
+            </div>
+          </div>
+
+          <!-- Feature Callout -->
+          <div class="auth-feature-callout">
+            <div class="callout-icon-box">✨</div>
+            <div>
+              <div class="callout-title">In step with you. Never ahead.</div>
+              <div class="callout-desc">Connected lectures. Clearer answers. Your own pace.</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RIGHT COLUMN: SIGN-IN CARD -->
+        <section class="auth-right-col">
+          <div class="auth-card">
+            <div class="auth-workspace-badge">
+              <span>🔒</span> YOUR LEARNING WORKSPACE
+            </div>
+            <h2 class="auth-card-title">Welcome back</h2>
+            <p class="auth-card-subtitle">Sign in to Lumivra to continue learning.</p>
+
+            <form class="auth-form" id="auth-signin-form">
+              <!-- Field 1: Email ID -->
+              <div class="auth-form-group">
+                <label class="auth-label" for="auth-email">Email ID</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                    </svg>
+                  </span>
+                  <input 
+                    type="email" 
+                    id="auth-email" 
+                    class="auth-input" 
+                    placeholder="Enter your email address" 
+                    value="student@stanford.edu"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Field 2: Mobile number -->
+              <div class="auth-form-group">
+                <label class="auth-label" for="auth-mobile">Mobile number</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                      <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                  </span>
+                  <input 
+                    type="tel" 
+                    id="auth-mobile" 
+                    class="auth-input" 
+                    placeholder="Enter your mobile number" 
+                    value="+1 (555) 234-5678"
+                    required
+                  />
+                </div>
+              </div>
+
+              <!-- Field 3: Password -->
+              <div class="auth-form-group">
+                <label class="auth-label" for="auth-password">Password</label>
+                <div class="auth-input-wrapper">
+                  <span class="auth-input-icon">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                  </span>
+                  <input 
+                    type="password" 
+                    id="auth-password" 
+                    class="auth-input" 
+                    placeholder="Enter your password" 
+                    value="Pass@word123"
+                    required
+                  />
+                  <button type="button" class="auth-toggle-pwd" id="btn-toggle-pwd" title="Toggle visibility">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                      <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <a href="#" class="auth-forgot-link" id="link-forgot-password">Forgot password?</a>
+
+              <!-- Sign In Button -->
+              <button type="submit" class="btn-auth-signin" id="btn-signin-submit">
+                <span>Sign in</span>
+                <span>→</span>
+              </button>
+
+              <div class="auth-or-divider">
+                <span>or</span>
+              </div>
+
+              <!-- Continue with Google Button -->
+              <button type="button" class="btn-auth-google" id="btn-google-auth">
+                <!-- 4-Color Google SVG -->
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Continue with Google</span>
+              </button>
+            </form>
+
+            <div class="auth-signup-text">
+              New to Lumivra? <a href="#" class="auth-signup-link" id="link-create-account">Create an account</a>
+            </div>
+
+            <div class="auth-secure-note">
+              <span>🛡️</span> Secure sign in. Your learning stays yours.
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="auth-footer">
+      <span>© 2026 Lumivra. Learn at your own pace.</span>
+      <div class="auth-footer-links">
+        <a href="#" class="auth-footer-link">Privacy policy</a>
+        <a href="#" class="auth-footer-link">Terms of service</a>
+      </div>
+    </footer>
+  </div>
+
+
+  <!-- ======================================================== -->
+  <!-- VIEW 2: LUMIVRA DASHBOARD (HOME SCREEN)                  -->
+  <!-- ======================================================== -->
+  <div id="lumivra-dashboard-view" class="lumivra-page hidden">
     <!-- Top Nav -->
     <header class="lumivra-nav">
       <div class="lumivra-logo-wrap" id="nav-brand-home">
         <div class="lumivra-logo-icon">
-          <!-- Stylized Book Logo -->
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="4" r="2" fill="currentColor"></circle>
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
@@ -30,17 +277,21 @@
         <span class="lumivra-brand-text">Lumivra</span>
       </div>
 
-      <button class="lumivra-user-icon-btn" title="Student Profile">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </button>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <button class="nav-pill-btn" id="btn-dash-to-prototype" title="Go straight to Course Workspace">
+          <span>Go to CS229 Course</span> <span>→</span>
+        </button>
+        <button class="lumivra-user-icon-btn" id="btn-dash-signout" title="Sign out / Switch account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+      </div>
     </header>
 
     <!-- Main Container -->
     <main class="lumivra-container">
-      <!-- Welcome Greeting -->
       <div class="lumivra-greeting-block">
         <span class="greeting-time-sub">Good morning, Student!</span>
         <h1 class="greeting-main-title">Welcome back!</h1>
@@ -49,73 +300,28 @@
       <!-- Hero AI Learning Assistant Banner -->
       <section class="lumivra-hero-banner">
         <div class="hero-left-section">
-          <!-- Cute 3D Robot Mascot Illustration inside Lilac Circle -->
           <div class="hero-robot-circle">
-            <svg width="115" height="115" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="robotHeadGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#ffffff"/>
-                  <stop offset="100%" stop-color="#e2e8f0"/>
-                </linearGradient>
-                <linearGradient id="robotScreenGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#111827"/>
-                  <stop offset="100%" stop-color="#1e1b4b"/>
-                </linearGradient>
-                <linearGradient id="eyeGlow" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#a855f7"/>
-                  <stop offset="100%" stop-color="#818cf8"/>
-                </linearGradient>
-                <linearGradient id="bookCoverGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0%" stop-color="#6366f1"/>
-                  <stop offset="100%" stop-color="#4f46e5"/>
-                </linearGradient>
-                <filter id="softShadow" x="-10%" y="-10%" width="120%" height="130%">
-                  <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#4338ca" flood-opacity="0.15"/>
-                </filter>
-              </defs>
-
-              <!-- Floor shadow -->
+            <svg width="115" height="115" viewBox="0 0 140 140" fill="none">
               <ellipse cx="70" cy="126" rx="42" ry="7" fill="#cbd5e1" opacity="0.6"/>
-
-              <!-- Robot Ears / Headsets -->
               <rect x="25" y="44" width="8" height="16" rx="4" fill="#cbd5e1"/>
               <rect x="107" y="44" width="8" height="16" rx="4" fill="#cbd5e1"/>
               <circle cx="29" cy="52" r="3" fill="#818cf8"/>
               <circle cx="111" cy="52" r="3" fill="#818cf8"/>
-
-              <!-- Antenna -->
               <line x1="70" y1="26" x2="70" y2="17" stroke="#cbd5e1" stroke-width="3" stroke-linecap="round"/>
               <circle cx="70" cy="14" r="5" fill="#818cf8"/>
-
-              <!-- Head -->
-              <rect x="30" y="24" width="80" height="56" rx="26" fill="url(#robotHeadGrad)" filter="url(#softShadow)"/>
-              
-              <!-- Screen Face -->
-              <rect x="40" y="34" width="60" height="36" rx="14" fill="url(#robotScreenGrad)"/>
-
-              <!-- Cute Smiling Eyes -->
-              <path d="M 48 50 Q 55 43 62 50" stroke="url(#eyeGlow)" stroke-width="4" stroke-linecap="round" fill="none"/>
-              <path d="M 78 50 Q 85 43 92 50" stroke="url(#eyeGlow)" stroke-width="4" stroke-linecap="round" fill="none"/>
-
-              <!-- Body / Torso -->
-              <rect x="46" y="78" width="48" height="38" rx="16" fill="url(#robotHeadGrad)"/>
+              <rect x="30" y="24" width="80" height="56" rx="26" fill="#ffffff" stroke="#e2e8f0"/>
+              <rect x="40" y="34" width="60" height="36" rx="14" fill="#111827"/>
+              <path d="M 48 50 Q 55 43 62 50" stroke="#a855f7" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <path d="M 78 50 Q 85 43 92 50" stroke="#a855f7" stroke-width="4" stroke-linecap="round" fill="none"/>
+              <rect x="46" y="78" width="48" height="38" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
               <rect x="54" y="84" width="32" height="24" rx="8" fill="#f1f5f9"/>
-
-              <!-- Crossed Sitting Legs / Feet -->
               <ellipse cx="44" cy="116" rx="12" ry="7" fill="#e2e8f0"/>
               <ellipse cx="96" cy="116" rx="12" ry="7" fill="#e2e8f0"/>
-
-              <!-- Open Book held by Robot -->
-              <!-- Left Cover & Pages -->
-              <path d="M 68 104 L 40 92 L 46 114 L 68 116 Z" fill="url(#bookCoverGrad)"/>
+              <path d="M 68 104 L 40 92 L 46 114 L 68 116 Z" fill="#6366f1"/>
               <path d="M 68 102 L 42 93 L 47 112 L 68 114 Z" fill="#ffffff"/>
-              <!-- Right Cover & Pages -->
-              <path d="M 72 104 L 100 92 L 94 114 L 72 116 Z" fill="url(#bookCoverGrad)"/>
+              <path d="M 72 104 L 100 92 L 94 114 L 72 116 Z" fill="#6366f1"/>
               <path d="M 72 102 L 98 93 L 93 112 L 72 114 Z" fill="#ffffff"/>
-              <!-- Book Center Spine -->
               <line x1="70" y1="102" x2="70" y2="116" stroke="#3730a3" stroke-width="2"/>
-
-              <!-- Robot Hands on Book -->
               <circle cx="43" cy="103" r="6" fill="#ffffff"/>
               <circle cx="97" cy="103" r="6" fill="#ffffff"/>
             </svg>
@@ -142,20 +348,16 @@
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
             </svg>
           </div>
-          <div class="hero-badge-headline">
-            No spoilers.<br>Just learning.
-          </div>
+          <div class="hero-badge-headline">No spoilers.<br>Just learning.</div>
           <span class="hero-badge-sub">Help that meets you where you are.</span>
         </div>
       </section>
 
-      <!-- 4 Primary Action Cards Grid (Find My Courses triggers prototype!) -->
+      <!-- 4 Primary Action Cards Grid -->
       <section class="lumivra-action-cards-grid">
-        <!-- CARD 1: FIND MY COURSES (TRIGGER) -->
         <div class="action-card" id="card-find-courses" title="Click to view CS229: Foundations of Deep Learning">
           <div class="action-card-header">
             <div class="card-icon-box card-icon-cyan">
-              <!-- Graduation Cap -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
                 <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
@@ -167,11 +369,9 @@
           <p class="action-card-desc">Your next moment of discovery</p>
         </div>
 
-        <!-- CARD 2: STUDY RESOURCES -->
         <div class="action-card" id="card-study-resources">
           <div class="action-card-header">
             <div class="card-icon-box card-icon-peach">
-              <!-- Book Icon -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
                 <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
@@ -183,11 +383,9 @@
           <p class="action-card-desc">Slides, PDFs, and your notes</p>
         </div>
 
-        <!-- CARD 3: MY PROGRESS -->
         <div class="action-card" id="card-my-progress">
           <div class="action-card-header">
             <div class="card-icon-box card-icon-purple">
-              <!-- Bar chart -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="18" y1="20" x2="18" y2="10"></line>
                 <line x1="12" y1="20" x2="12" y2="4"></line>
@@ -200,11 +398,9 @@
           <p class="action-card-desc">See how far you've come</p>
         </div>
 
-        <!-- CARD 4: COMMUNITY -->
         <div class="action-card" id="card-community">
           <div class="action-card-header">
             <div class="card-icon-box card-icon-indigo">
-              <!-- Chat bubbles -->
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
               </svg>
@@ -218,7 +414,6 @@
 
       <!-- Bottom Three-Column Dashboard Grid -->
       <section class="lumivra-bottom-grid">
-        <!-- COLUMN 1: YOUR LEARNING PROGRESS -->
         <div class="dashboard-panel-card">
           <div class="panel-card-header">
             <div class="panel-card-title-wrap">
@@ -230,9 +425,7 @@
               <span>Your Learning Progress</span>
             </div>
           </div>
-
           <div class="progress-content-split">
-            <!-- 70% Circular Donut -->
             <div class="progress-donut-container">
               <svg width="90" height="90" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="38" stroke="#f1f5f9" stroke-width="9" fill="none"/>
@@ -245,28 +438,13 @@
                 <span class="donut-sub">of your weekly goal</span>
               </div>
             </div>
-
-            <!-- Checklist -->
             <div class="progress-checklist">
-              <div class="checklist-item">
-                <span class="check-icon-done">✓</span>
-                <span>Watch Module 1</span>
-              </div>
-              <div class="checklist-item">
-                <span class="check-icon-done">✓</span>
-                <span>Review lecture notes</span>
-              </div>
-              <div class="checklist-item">
-                <span class="check-icon-empty"></span>
-                <span>Continue Module 2</span>
-              </div>
-              <div class="checklist-item">
-                <span class="check-icon-empty"></span>
-                <span>Complete practice quiz</span>
-              </div>
+              <div class="checklist-item"><span class="check-icon-done">✓</span><span>Watch Module 1</span></div>
+              <div class="checklist-item"><span class="check-icon-done">✓</span><span>Review lecture notes</span></div>
+              <div class="checklist-item"><span class="check-icon-empty"></span><span>Continue Module 2</span></div>
+              <div class="checklist-item"><span class="check-icon-empty"></span><span>Complete practice quiz</span></div>
             </div>
           </div>
-
           <div class="progress-streak-banner">
             <span class="streak-flame-icon">⚡</span>
             <div>
@@ -274,13 +452,9 @@
               <div class="streak-text-sub">Small steps. Real understanding.</div>
             </div>
           </div>
-
-          <div class="progress-footer-stats">
-            2h 48m learned / 4h weekly goal
-          </div>
+          <div class="progress-footer-stats">2h 48m learned / 4h weekly goal</div>
         </div>
 
-        <!-- COLUMN 2: UPCOMING TASKS -->
         <div class="dashboard-panel-card">
           <div class="panel-card-header">
             <div class="panel-card-title-wrap">
@@ -294,9 +468,7 @@
             </div>
             <a href="#prototype" class="panel-header-link" id="link-view-all-tasks">View all →</a>
           </div>
-
           <div class="tasks-list-container">
-            <!-- Task 1: Continue Module 2 (clickable to open prototype) -->
             <div class="task-item-row" id="task-continue-module2" title="Resume Module 2: Perceptrons">
               <div class="task-item-left">
                 <div class="task-icon-box">
@@ -313,7 +485,6 @@
               <span class="task-chevron">›</span>
             </div>
 
-            <!-- Task 2: Review loss surfaces -->
             <div class="task-item-row" id="task-review-loss">
               <div class="task-item-left">
                 <div class="task-icon-box">
@@ -331,7 +502,6 @@
               <span class="task-chevron">›</span>
             </div>
 
-            <!-- Task 3: Check your understanding -->
             <div class="task-item-row" id="task-check-quiz">
               <div class="task-item-left">
                 <div class="task-icon-box">
@@ -355,7 +525,6 @@
           </div>
         </div>
 
-        <!-- COLUMN 3: LATEST UPDATES -->
         <div class="dashboard-panel-card">
           <div class="panel-card-header">
             <div class="panel-card-title-wrap">
@@ -367,7 +536,6 @@
               <span>Latest Updates</span>
             </div>
           </div>
-
           <div class="updates-list-container">
             <div class="update-item-row">
               <div class="update-icon-box icon-blue">
@@ -412,7 +580,6 @@
       </section>
     </main>
 
-    <!-- Lumivra Footer -->
     <footer class="lumivra-footer">
       <span>Made for your moment of understanding.</span>
       <span>Your learning, at your pace.</span>
@@ -421,7 +588,7 @@
 
 
   <!-- ======================================================== -->
-  <!-- VIEW 2: TEMPORAL RAG PROTOTYPE (CANVAS LEARNING WORKSPACE)-->
+  <!-- VIEW 3: TEMPORAL RAG PROTOTYPE (CANVAS LEARNING WORKSPACE)-->
   <!-- ======================================================== -->
   <div id="prototype-workspace-view" class="prototype-page hidden">
     <!-- Top Navbar -->
@@ -468,7 +635,7 @@
         </a>
 
         <button class="nav-circle-btn" id="btn-help-modal" title="Help & System Info">?</button>
-        <div class="user-avatar-pill" title="Student Profile">AS</div>
+        <div class="user-avatar-pill" id="user-avatar-signout" title="Click to Sign Out / Switch Account">AS</div>
       </div>
     </nav>
 

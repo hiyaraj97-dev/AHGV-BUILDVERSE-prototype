@@ -1,6 +1,6 @@
 // app.js
-// Client Application for Lumivra & Temporal RAG LMS Prototype
-// Integrates the Lumivra Dashboard with the Canvas Temporal RAG Learning Companion
+// Client Application for Lumivra Auth, Student Dashboard & Temporal RAG LMS Prototype
+// Fulfills 3-tier SaaS journey: Auth -> Lumivra Dashboard -> Canvas Temporal RAG Learning Companion
 
 const FALLBACK_COURSE_DATA = {
   id: "cs229-dl-01",
@@ -299,18 +299,40 @@ let playInterval = null;
 let currentRagMode = "temporal"; // "temporal" or "naive"
 let activeSlideIndex = 1; // 0-indexed (slide 2)
 
-// Lumivra View Elements
+// =========================================================
+// DOM ELEMENTS FOR ALL THREE VIEWS
+// =========================================================
+
+// View Containers
+const lumivraAuthView = document.getElementById("lumivra-auth-view");
 const lumivraDashboardView = document.getElementById("lumivra-dashboard-view");
 const prototypeWorkspaceView = document.getElementById("prototype-workspace-view");
+
+// Auth View Elements
+const authSigninForm = document.getElementById("auth-signin-form");
+const btnGoogleAuth = document.getElementById("btn-google-auth");
+const authEmailInput = document.getElementById("auth-email");
+const authMobileInput = document.getElementById("auth-mobile");
+const authPasswordInput = document.getElementById("auth-password");
+const btnTogglePwd = document.getElementById("btn-toggle-pwd");
+const authTeaserCardTrigger = document.getElementById("auth-teaser-card-trigger");
+const btnAuthHelp = document.getElementById("btn-auth-help");
+
+// Dashboard Elements
 const cardFindCourses = document.getElementById("card-find-courses");
 const heroBtnStartLearning = document.getElementById("hero-btn-start-learning");
 const taskContinueModule2 = document.getElementById("task-continue-module2");
 const linkViewAllTasks = document.getElementById("link-view-all-tasks");
-const btnBackToDashboard = document.getElementById("btn-back-to-dashboard");
-const breadcrumbLumivraHome = document.getElementById("breadcrumb-lumivra-home");
+const btnDashToPrototype = document.getElementById("btn-dash-to-prototype");
+const btnDashSignout = document.getElementById("btn-dash-signout");
 const navBrandHome = document.getElementById("nav-brand-home");
 
-// Prototype DOM Elements
+// Prototype Navigation
+const btnBackToDashboard = document.getElementById("btn-back-to-dashboard");
+const breadcrumbLumivraHome = document.getElementById("breadcrumb-lumivra-home");
+const userAvatarSignout = document.getElementById("user-avatar-signout");
+
+// Prototype Video & Canvas Elements
 const canvas = document.getElementById("lecture-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
 const btnPlayPause = document.getElementById("btn-play-pause");
@@ -381,12 +403,22 @@ function formatTime(sec) {
 }
 
 // =========================================================
-// VIEW NAVIGATION CONTROLLERS (LUMIVRA <-> TEMPORAL RAG)
+// VIEW NAVIGATION CONTROLLERS (AUTH <-> DASHBOARD <-> PROTOTYPE)
 // =========================================================
 
+function showAuth() {
+  if (isPlaying) pausePlayback();
+  if (lumivraAuthView) lumivraAuthView.classList.remove("hidden");
+  if (lumivraDashboardView) lumivraDashboardView.classList.add("hidden");
+  if (prototypeWorkspaceView) prototypeWorkspaceView.classList.add("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.location.hash = "signin";
+}
+
 function showPrototype(seekSeconds) {
-  if (lumivraDashboardView && prototypeWorkspaceView) {
-    lumivraDashboardView.classList.add("hidden");
+  if (lumivraAuthView) lumivraAuthView.classList.add("hidden");
+  if (lumivraDashboardView) lumivraDashboardView.classList.add("hidden");
+  if (prototypeWorkspaceView) {
     prototypeWorkspaceView.classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -401,11 +433,10 @@ function showPrototype(seekSeconds) {
 }
 
 function showLumivraDashboard() {
-  if (isPlaying) {
-    pausePlayback();
-  }
-  if (lumivraDashboardView && prototypeWorkspaceView) {
-    prototypeWorkspaceView.classList.add("hidden");
+  if (isPlaying) pausePlayback();
+  if (lumivraAuthView) lumivraAuthView.classList.add("hidden");
+  if (prototypeWorkspaceView) prototypeWorkspaceView.classList.add("hidden");
+  if (lumivraDashboardView) {
     lumivraDashboardView.classList.remove("hidden");
     window.scrollTo({ top: 0, behavior: "smooth" });
     window.location.hash = "dashboard";
@@ -416,8 +447,10 @@ function handleHashChange() {
   const hash = window.location.hash;
   if (hash === "#course-cs229" || hash === "#prototype" || hash === "#courses") {
     showPrototype();
-  } else {
+  } else if (hash === "#dashboard") {
     showLumivraDashboard();
+  } else {
+    showAuth();
   }
 }
 
@@ -447,8 +480,10 @@ async function initApp() {
   // Route depending on hash
   if (window.location.hash === "#course-cs229" || window.location.hash === "#prototype" || window.location.hash === "#courses") {
     showPrototype();
-  } else {
+  } else if (window.location.hash === "#dashboard") {
     showLumivraDashboard();
+  } else {
+    showAuth();
   }
 }
 
@@ -573,7 +608,7 @@ function drawLectureFrame() {
   });
 
   // Center Activation Node (Large Purple Glowing Circle with σ)
-  ctx.fillStyle = "#1e1b4b"; // deep indigo
+  ctx.fillStyle = "#1e1b4b";
   ctx.strokeStyle = "#818cf8";
   ctx.lineWidth = 2.5;
   ctx.beginPath();
@@ -926,31 +961,72 @@ function appendBotMessage(data) {
 
 // 7. EVENT LISTENERS SETUP
 function setupEventListeners() {
-  // --- LUMIVRA NAVIGATION EVENTS ---
-  // 1. "Find My Courses" Card -> reveals prototype
+  // --- AUTH VIEW EVENTS (USER REQUEST TRIGGER) ---
+  // 1. Enter email, mobile, password and submit -> opens prototype!
+  if (authSigninForm) {
+    authSigninForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-signin-submit");
+      if (btn) btn.innerHTML = "<span>Signing in...</span>";
+      setTimeout(() => {
+        if (btn) btn.innerHTML = "<span>Sign in</span> <span>→</span>";
+        showPrototype();
+      }, 300);
+    });
+  }
+
+  // 2. Click "Continue with Google" -> opens prototype!
+  if (btnGoogleAuth) {
+    btnGoogleAuth.addEventListener("click", () => {
+      btnGoogleAuth.innerHTML = "<span>Connecting Google account...</span>";
+      setTimeout(() => {
+        btnGoogleAuth.innerHTML = "<span>Continue with Google</span>";
+        showPrototype();
+      }, 300);
+    });
+  }
+
+  // 3. Password visibility toggle
+  if (btnTogglePwd && authPasswordInput) {
+    btnTogglePwd.addEventListener("click", () => {
+      const isPwd = authPasswordInput.type === "password";
+      authPasswordInput.type = isPwd ? "text" : "password";
+    });
+  }
+
+  // 4. Click teaser card on auth page -> opens prototype!
+  if (authTeaserCardTrigger) {
+    authTeaserCardTrigger.addEventListener("click", () => showPrototype());
+  }
+
+  // 5. Help modal in auth page
+  if (btnAuthHelp && archModal) {
+    btnAuthHelp.addEventListener("click", () => archModal.classList.remove("hidden"));
+  }
+
+  // --- LUMIVRA DASHBOARD EVENTS ---
   if (cardFindCourses) {
     cardFindCourses.addEventListener("click", () => showPrototype());
   }
-
-  // 2. "Start Learning ->" Hero button -> reveals prototype
   if (heroBtnStartLearning) {
     heroBtnStartLearning.addEventListener("click", () => showPrototype());
   }
-
-  // 3. "Continue Module 2" task row -> reveals prototype
   if (taskContinueModule2) {
     taskContinueModule2.addEventListener("click", () => showPrototype(150));
   }
-
-  // 4. "View all ->" tasks link -> reveals prototype
   if (linkViewAllTasks) {
     linkViewAllTasks.addEventListener("click", (e) => {
       e.preventDefault();
       showPrototype();
     });
   }
+  if (btnDashToPrototype) {
+    btnDashToPrototype.addEventListener("click", () => showPrototype());
+  }
+  if (btnDashSignout) {
+    btnDashSignout.addEventListener("click", () => showAuth());
+  }
 
-  // 5. Lumivra "Study Resources" Card -> opens prototype to reading notes
   const cardStudyResources = document.getElementById("card-study-resources");
   if (cardStudyResources) {
     cardStudyResources.addEventListener("click", () => {
@@ -960,7 +1036,6 @@ function setupEventListeners() {
     });
   }
 
-  // 6. Lumivra "My Progress" Card -> scrolls smoothly to progress section
   const cardMyProgress = document.getElementById("card-my-progress");
   if (cardMyProgress) {
     cardMyProgress.addEventListener("click", () => {
@@ -969,7 +1044,6 @@ function setupEventListeners() {
     });
   }
 
-  // 7. Lumivra "Community" Card -> interactive notice
   const cardCommunity = document.getElementById("card-community");
   if (cardCommunity) {
     cardCommunity.addEventListener("click", () => {
@@ -978,7 +1052,7 @@ function setupEventListeners() {
     });
   }
 
-  // --- RETURN TO LUMIVRA EVENTS ---
+  // --- RETURN TO DASHBOARD / SIGN-OUT EVENTS ---
   if (btnBackToDashboard) {
     btnBackToDashboard.addEventListener("click", () => showLumivraDashboard());
   }
@@ -987,6 +1061,15 @@ function setupEventListeners() {
   }
   if (navBrandHome) {
     navBrandHome.addEventListener("click", () => showLumivraDashboard());
+  }
+
+  // Click on AS avatar pill to sign out / switch account
+  if (userAvatarSignout) {
+    userAvatarSignout.addEventListener("click", () => {
+      if (confirm("Sign out of current learning session and return to Sign-In?")) {
+        showAuth();
+      }
+    });
   }
 
   // Browser hash change listener
