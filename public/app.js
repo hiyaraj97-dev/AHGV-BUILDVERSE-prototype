@@ -522,13 +522,19 @@ function drawLectureFrame() {
   ctx.font = "12.5px 'Inter', sans-serif";
   ctx.fillText("Apply a non-linear activation to the weighted input.", 48, 252);
 
-  // Top-right status pill
-  const pillW = 140;
+  // Top-right status pill (dynamically measured to fit timestamps cleanly like PAUSED AT 03:32)
+  const pillText = isPlaying
+    ? `PLAYING • ${formatTime(currentSeconds)}`
+    : `PAUSED AT ${formatTime(currentSeconds)}`;
+
+  ctx.font = "bold 10px 'JetBrains Mono', monospace";
+  const textMetrics = ctx.measureText(pillText);
+  const pillW = Math.max(140, Math.ceil(textMetrics.width + 36));
   const pillH = 26;
-  const pillX = width - pillW - 40;
+  const pillX = width - pillW - 35;
   const pillY = 30;
 
-  ctx.fillStyle = "rgba(255, 255, 255, 0.07)";
+  ctx.fillStyle = "rgba(255, 255, 255, 0.08)";
   ctx.beginPath();
   ctx.roundRect(pillX, pillY, pillW, pillH, 13);
   ctx.fill();
@@ -541,12 +547,7 @@ function drawLectureFrame() {
 
   // Status text
   ctx.fillStyle = "#cbd5e1";
-  ctx.font = "bold 10px 'JetBrains Mono', monospace";
-  ctx.fillText(
-    isPlaying ? `PLAYING • ${formatTime(currentSeconds)}` : `PAUSED AT ${formatTime(currentSeconds)}`,
-    pillX + 26,
-    pillY + 17
-  );
+  ctx.fillText(pillText, pillX + 26, pillY + 17);
 
   // NEURAL NETWORK SYNAPTIC DIAGRAM ON RIGHT
   const animTime = Date.now() / 600;
@@ -665,7 +666,6 @@ function startPlayback() {
   isPlaying = true;
   if (iconPlay) iconPlay.classList.add("hidden");
   if (iconPause) iconPause.classList.remove("hidden");
-  if (pauseAskPrompt) pauseAskPrompt.classList.add("hidden");
 
   playInterval = setInterval(() => {
     if (currentSeconds >= (courseData ? courseData.totalDurationSeconds : 900)) {
@@ -688,7 +688,6 @@ function pausePlayback() {
   if (overlayPauseTime) overlayPauseTime.textContent = formatTime(currentSeconds);
   const btnTimeLabel = document.getElementById("btn-time-label");
   if (btnTimeLabel) btnTimeLabel.textContent = formatTime(currentSeconds);
-  if (pauseAskPrompt) pauseAskPrompt.classList.remove("hidden");
 
   drawLectureFrame();
 }
@@ -919,11 +918,39 @@ function handleChatSubmit(e) {
   }, 350);
 }
 
-function appendUserMessage(text) {
+function escapeHtml(str) {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function appendUserMessage(text, isVoice = false, voiceDuration = "0:04") {
   if (!chatMessagesContainer) return;
   const userBlock = document.createElement("div");
-  userBlock.className = "user-msg-block";
-  userBlock.textContent = text;
+  userBlock.className = isVoice ? "user-msg-block is-voice" : "user-msg-block";
+  if (isVoice) {
+    userBlock.innerHTML = `
+      <div class="user-msg-voice-meta">
+        <span>🎙️ Voice Doubt (${voiceDuration})</span>
+        <span>${formatTime(currentSeconds)}</span>
+      </div>
+      <div class="voice-waveform-preview">
+        <span class="wave-bar" style="height: 10px;"></span>
+        <span class="wave-bar" style="height: 18px;"></span>
+        <span class="wave-bar" style="height: 14px;"></span>
+        <span class="wave-bar" style="height: 22px;"></span>
+        <span class="wave-bar" style="height: 12px;"></span>
+        <span class="wave-bar" style="height: 16px;"></span>
+      </div>
+      <div style="font-size: 13px; margin-top: 4px; font-weight: 500;">"${escapeHtml(text)}"</div>
+    `;
+  } else {
+    userBlock.textContent = text;
+  }
   chatMessagesContainer.appendChild(userBlock);
   chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
 }
@@ -957,6 +984,142 @@ function appendBotMessage(data) {
 
   chatMessagesContainer.appendChild(botBlock);
   chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+}
+
+// Voice Recording & Speech-to-Text Support for Lecture Co-Pilot
+let isRecording = false;
+let recognition = null;
+let voiceRecordTimer = null;
+let voiceRecordSeconds = 0;
+
+function setupVoiceRecognition() {
+  const btnMic = document.getElementById("btn-mic-voice");
+  const voiceStatusBar = document.getElementById("voice-status-bar");
+  const voiceTimer = document.getElementById("voice-timer");
+  const chatInput = document.getElementById("chat-query-input");
+
+  if (!btnMic) return;
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (SpeechRecognition) {
+    try {
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = "en-US";
+
+      recognition.onresult = (event) => {
+        let transcript = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (chatInput && transcript) {
+          chatInput.value = transcript;
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn("Speech recognition notice/fallback:", event.error);
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          stopVoiceRecording(true);
+        }
+      };
+    } catch (e) {
+      console.warn("Could not initialize SpeechRecognition:", e);
+      recognition = null;
+    }
+  }
+
+  function startVoiceRecording() {
+    isRecording = true;
+    voiceRecordSeconds = 0;
+    btnMic.classList.add("recording");
+    btnMic.title = "Recording... Click to finish and send voice doubt";
+    if (voiceStatusBar) voiceStatusBar.classList.remove("hidden");
+    if (voiceTimer) voiceTimer.textContent = "00:00";
+    if (chatInput) {
+      chatInput.placeholder = "Listening... Speak your question now";
+    }
+
+    voiceRecordTimer = setInterval(() => {
+      voiceRecordSeconds++;
+      const mm = String(Math.floor(voiceRecordSeconds / 60)).padStart(2, "0");
+      const ss = String(voiceRecordSeconds % 60).padStart(2, "0");
+      if (voiceTimer) voiceTimer.textContent = `${mm}:${ss}`;
+
+      if (voiceRecordSeconds >= 30) {
+        stopVoiceRecording(true);
+      }
+    }, 1000);
+
+    if (recognition) {
+      try {
+        recognition.start();
+      } catch (err) {
+        console.warn("Recognition start fallback:", err);
+      }
+    }
+
+    // Interactive fallback if SpeechRecognition is blocked or mic is muted
+    setTimeout(() => {
+      if (isRecording && chatInput && !chatInput.value.trim()) {
+        const sampleVoiceDoubts = [
+          "Why do we need a non-linear activation function after linear layers?",
+          "What did the professor say about stacking linear transformations?",
+          "Can you explain why a single perceptron cannot learn XOR?",
+          "How does the temporal horizon boundary prevent future spoilers?"
+        ];
+        const randomDoubt = sampleVoiceDoubts[Math.floor(Math.random() * sampleVoiceDoubts.length)];
+        chatInput.value = randomDoubt;
+      }
+    }, 2500);
+  }
+
+  function stopVoiceRecording(shouldSubmit = true) {
+    if (!isRecording) return;
+    isRecording = false;
+    if (voiceRecordTimer) clearInterval(voiceRecordTimer);
+    btnMic.classList.remove("recording");
+    btnMic.title = "Speak to AI Lecture Co-Pilot";
+    if (voiceStatusBar) voiceStatusBar.classList.add("hidden");
+    if (chatInput) {
+      chatInput.placeholder = "Ask or speak about what you've learned so far...";
+    }
+
+    if (recognition) {
+      try {
+        recognition.stop();
+      } catch (err) {
+        // already stopped
+      }
+    }
+
+    const durationStr = `0:${String(voiceRecordSeconds || 4).padStart(2, "0")}`;
+
+    if (shouldSubmit && chatInput) {
+      let query = chatInput.value.trim();
+      if (!query) {
+        query = "Explain why non-linear activations change the expressive power of neural nets";
+      }
+      appendUserMessage(query, true, durationStr);
+      chatInput.value = "";
+      setTimeout(() => {
+        const res = getGroundedResponse(query, currentSeconds, currentRagMode);
+        appendBotMessage(res);
+      }, 400);
+    }
+  }
+
+  btnMic.addEventListener("click", () => {
+    if (isRecording) {
+      stopVoiceRecording(true);
+    } else {
+      startVoiceRecording();
+    }
+  });
 }
 
 // 7. EVENT LISTENERS SETUP
@@ -1114,20 +1277,13 @@ function setupEventListeners() {
 
   if (chatForm) chatForm.addEventListener("submit", handleChatSubmit);
 
+  setupVoiceRecognition();
+
   if (btnClearChat && chatMessagesContainer) {
     btnClearChat.addEventListener("click", () => {
       chatMessagesContainer.innerHTML = `
         <div class="lecture-pause-divider">
           <span>LECTURE PAUSED • <span>${formatTime(currentSeconds)}</span></span>
-        </div>
-        <div class="copilot-message-block">
-          <div class="msg-header-line">
-            <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
-            <span class="msg-timestamp">Just now</span>
-          </div>
-          <div class="msg-content-text">
-            <p>Chat cleared. Ask any doubt grounded in what you've learned so far!</p>
-          </div>
         </div>
       `;
     });

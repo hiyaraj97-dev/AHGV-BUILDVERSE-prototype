@@ -2667,3 +2667,103 @@ body {
     gap: 32px;
   }
 }
+
+
+/* ========================================================= */
+/* VOICE MESSAGE & MIC BUTTON STYLES FOR LECTURE CO-PILOT    */
+/* ========================================================= */
+
+.input-action-btn.btn-mic {
+  background-color: #ffffff;
+  border: 1px solid var(--border-color);
+  color: var(--text-dim);
+  transition: all 0.2s ease;
+}
+
+.input-action-btn.btn-mic:hover {
+  background-color: var(--bg-page);
+  color: var(--primary);
+  border-color: #cbd5e1;
+}
+
+.input-action-btn.btn-mic.recording {
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.25);
+  animation: pulseMic 1.2s infinite;
+}
+
+@keyframes pulseMic {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.voice-recording-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #991b1b;
+  margin-bottom: 6px;
+}
+
+.voice-recording-bar.hidden {
+  display: none;
+}
+
+.voice-wave-anim {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.wave-bar {
+  width: 3px;
+  height: 12px;
+  background-color: #ef4444;
+  border-radius: 2px;
+  animation: wavePulse 0.8s infinite ease-in-out;
+}
+
+.wave-bar:nth-child(2) { animation-delay: 0.15s; }
+.wave-bar:nth-child(3) { animation-delay: 0.3s; }
+.wave-bar:nth-child(4) { animation-delay: 0.45s; }
+
+@keyframes wavePulse {
+  0%, 100% { height: 6px; }
+  50% { height: 16px; }
+}
+
+.user-msg-block.is-voice {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-msg-voice-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 10px;
+  opacity: 0.88;
+}
+
+.voice-waveform-preview {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 4px;
+}
+
+.voice-waveform-preview .wave-bar {
+  background-color: rgba(255, 255, 255, 0.75);
+  height: 8px;
+  animation: none;
+}

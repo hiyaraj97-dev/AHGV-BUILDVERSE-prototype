@@ -694,18 +694,6 @@
         <div class="video-card-container">
           <div class="video-screen-wrapper">
             <canvas id="lecture-canvas" width="800" height="450"></canvas>
-            
-            <!-- Pause Overlay -->
-            <div class="pause-ask-overlay hidden" id="pause-ask-prompt">
-              <div class="overlay-content-left">
-                <span class="overlay-pause-badge">⏸️</span>
-                <div class="overlay-text-block">
-                  <strong>Paused at <span id="overlay-pause-time">02:30</span></strong>
-                  <p>Have a doubt right here? Ask your AI Co-Pilot without losing context.</p>
-                </div>
-              </div>
-              <button class="btn-overlay-ask" id="btn-focus-doubt">Ask Question at <span id="btn-time-label">02:30</span></button>
-            </div>
           </div>
 
           <!-- Video Scrubber Bar -->
@@ -1004,30 +992,6 @@
             <div class="lecture-pause-divider">
               <span>LECTURE PAUSED • <span id="divider-time-label">02:30</span></span>
             </div>
-
-            <!-- Welcome Message -->
-            <div class="copilot-message-block">
-              <div class="msg-header-line">
-                <span class="msg-author-tag">✨ Lecture Co-Pilot</span>
-                <span class="msg-timestamp">Just now</span>
-              </div>
-              <div class="msg-content-text">
-                <p>
-                  Let's make this lecture click. I'm following along at <strong id="welcome-pause-time">02:30</strong>, where you're exploring non-linear activation functions.
-                </p>
-                <p>
-                  Ask me to unpack an idea, connect it to your reading, or revisit a point. Every answer is grounded in what you've covered, with clickable citations back to the source.
-                </p>
-                <div class="msg-key-idea-card">
-                  <strong>The key idea so far:</strong> stacking linear layers still gives a linear transformation. A non-linear activation is what changes the network's expressive power.
-                  <div>
-                    <a class="msg-citation-link" onclick="seekToSeconds(105)">
-                      ▷ 01:45 • Slide 2 ↗
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- "A place to start" 2x2 Grid -->
@@ -1072,20 +1036,38 @@
 
           <!-- Chat Input Form -->
           <form id="chat-form">
+            <!-- Voice Recording Waveform Bar -->
+            <div class="voice-recording-bar hidden" id="voice-status-bar">
+              <div class="voice-wave-anim">
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span class="wave-bar"></span>
+                <span style="font-weight: 600; margin-left: 5px;">Listening... Speak your question</span>
+              </div>
+              <span id="voice-timer">00:00</span>
+            </div>
+
             <div class="copilot-input-wrapper">
               <input 
                 type="text" 
                 id="chat-query-input" 
                 class="chat-text-input" 
-                placeholder="Ask about what you've learned so far..." 
+                placeholder="Ask or speak about what you've learned so far..." 
                 autocomplete="off"
-                required
               />
               <div class="input-bottom-actions">
                 <span class="context-tag-pill" id="input-timestamp-tag">
                   ⏱️ Context: <span id="tag-time-label">02:30</span>
                 </span>
                 <div class="input-btns-right">
+                  <button type="button" class="input-action-btn btn-mic" id="btn-mic-voice" title="Speak to AI Lecture Co-Pilot">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                      <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                      <line x1="12" x2="12" y1="19" y2="22"></line>
+                    </svg>
+                  </button>
                   <button type="button" class="input-action-btn btn-plus" title="Add reference or code">+</button>
                   <button type="submit" id="btn-send-doubt" class="input-action-btn" title="Send Question">
                     ↑
