@@ -961,8 +961,8 @@ function appendBotMessage(data) {
 
 // 7. EVENT LISTENERS SETUP
 function setupEventListeners() {
-  // --- AUTH VIEW EVENTS (USER REQUEST TRIGGER) ---
-  // 1. Enter email, mobile, password and submit -> opens prototype!
+  // --- AUTH VIEW EVENTS (USER REQUEST TRIGGER: SIGN IN -> OPENS DASHBOARD) ---
+  // 1. Enter email, mobile, password and submit -> opens Dashboard!
   if (authSigninForm) {
     authSigninForm.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -970,18 +970,18 @@ function setupEventListeners() {
       if (btn) btn.innerHTML = "<span>Signing in...</span>";
       setTimeout(() => {
         if (btn) btn.innerHTML = "<span>Sign in</span> <span>→</span>";
-        showPrototype();
+        showLumivraDashboard();
       }, 300);
     });
   }
 
-  // 2. Click "Continue with Google" -> opens prototype!
+  // 2. Click "Continue with Google" -> opens Dashboard!
   if (btnGoogleAuth) {
     btnGoogleAuth.addEventListener("click", () => {
       btnGoogleAuth.innerHTML = "<span>Connecting Google account...</span>";
       setTimeout(() => {
         btnGoogleAuth.innerHTML = "<span>Continue with Google</span>";
-        showPrototype();
+        showLumivraDashboard();
       }, 300);
     });
   }
@@ -994,9 +994,9 @@ function setupEventListeners() {
     });
   }
 
-  // 4. Click teaser card on auth page -> opens prototype!
+  // 4. Click teaser card on auth page -> opens Dashboard
   if (authTeaserCardTrigger) {
-    authTeaserCardTrigger.addEventListener("click", () => showPrototype());
+    authTeaserCardTrigger.addEventListener("click", () => showLumivraDashboard());
   }
 
   // 5. Help modal in auth page
